@@ -172,7 +172,12 @@ function mapOrder(o: any) {
     deliveryCity: o.delivery_city,
     addressDetail: o.address_detail,
     deliveryFeeUSD: o.delivery_fee_usd,
-    items: o.items || [],
+    items: (o.items || []).map((item: any) => ({
+      ...item,
+      unitType: item.unitType || 'Unidad',
+      unitPriceUSD: item.unitPriceUSD || item.priceUSD || 0,
+      subtotalUSD: item.subtotalUSD !== undefined ? item.subtotalUSD : ((item.unitPriceUSD || item.priceUSD || 0) * (item.quantity || 1)),
+    })),
     totalUSD: o.total_usd,
     exchangeRateVES: o.exchange_rate_ves,
     totalVES: o.total_ves,

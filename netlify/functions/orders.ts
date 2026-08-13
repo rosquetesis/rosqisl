@@ -62,8 +62,10 @@ async function createOrder(rawBody: string | null) {
     items: (body.items as any[]).map(item => ({
       productId: sanitizeStr(item.productId, 100),
       productName: sanitizeStr(item.productName, 200),
+      unitType: sanitizeStr(item.unitType || 'Unidad', 50),
       quantity: Math.max(1, Math.floor(sanitizeNum(item.quantity))),
-      priceUSD: sanitizeNum(item.priceUSD),
+      unitPriceUSD: sanitizeNum(item.unitPriceUSD || item.priceUSD),
+      subtotalUSD: sanitizeNum(item.subtotalUSD),
     })),
     total_usd: sanitizeNum(body.totalUSD),
     exchange_rate_ves: sanitizeNum(body.exchangeRateVES),
@@ -86,7 +88,31 @@ async function createOrder(rawBody: string | null) {
     // Upsert customer (fire-and-forget, non-critical)
     upsertCustomer(supabase, newOrder).catch(console.warn);
 
-    return jsonResponse(200, { success: true, order: data });
+    // Map snake_case to camelCase so the frontend doesn't crash (White Screen of Death)
+    const mappedOrder = {
+      id: data.id,
+      orderNumber: data.order_number,
+      customerName: data.customer_name,
+      customerPhone: data.customer_phone,
+      customerEmail: data.customer_email,
+      deliveryZone: data.delivery_zone,
+      deliveryCity: data.delivery_city,
+      addressDetail: data.address_detail,
+      deliveryFeeUSD: data.delivery_fee_usd,
+      items: data.items || [],
+      totalUSD: data.total_usd,
+      exchangeRateVES: data.exchange_rate_ves,
+      totalVES: data.total_ves,
+      paymentMethod: data.payment_method,
+      paymentReference: data.payment_reference,
+      paymentVerified: data.payment_verified,
+      paidOnline: data.paid_online,
+      status: data.status,
+      notes: data.notes,
+      createdAt: data.created_at,
+    };
+
+    return jsonResponse(200, { success: true, order: mappedOrder });
   } catch (err: any) {
     console.error('[orders] Create error:', err.message);
     return jsonResponse(500, { error: 'Error al registrar la orden' });
