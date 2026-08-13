@@ -74,9 +74,14 @@ export const PaymentMethodsManager: React.FC<PaymentMethodsManagerProps> = ({
     }
   };
 
-  const handleSaveMethodForm = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveMethodForm = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!editingMethod) return;
+
+    if (!editingMethod.name.trim()) {
+      alert('El nombre del método de pago es requerido.');
+      return;
+    }
 
     if (isAddingNew) {
       onUpdatePaymentMethods([...paymentMethods, editingMethod]);
@@ -324,7 +329,7 @@ export const PaymentMethodsManager: React.FC<PaymentMethodsManagerProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleSaveMethodForm} className="space-y-4">
+            <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-[#3E2E22] mb-1">Nombre del Método de Pago *</label>
@@ -519,13 +524,14 @@ export const PaymentMethodsManager: React.FC<PaymentMethodsManagerProps> = ({
                   Cancelar
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={() => handleSaveMethodForm()}
                   className="px-6 py-2 rounded-xl bg-[#D97706] hover:bg-[#B45309] text-white font-extrabold text-xs shadow-md transition-all cursor-pointer"
                 >
                   {isAddingNew ? 'Guardar Nuevo Método' : 'Guardar Cambios'}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
