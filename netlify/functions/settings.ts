@@ -47,7 +47,11 @@ export const handler: Handler = async (event) => {
 
   for (const [front, db] of Object.entries(strMap)) {
     if (front in body && body[front] !== undefined) {
-      update[db] = sanitizeStr(body[front]);
+      if (front === 'whatsappMessageTemplate') {
+        update[db] = sanitizeStr(body[front], 4000);
+      } else {
+        update[db] = sanitizeStr(body[front]);
+      }
     }
   }
 

@@ -68,7 +68,25 @@ function mapSettings(s: any) {
     dispatchMode: s.dispatch_mode,
     whatsappNumber: s.whatsapp_number,
     emailRecipient: s.email_recipient,
-    whatsappMessageTemplate: s.whatsapp_message_template,
+    whatsappMessageTemplate: s.whatsapp_message_template || `✨ *NUEVO PEDIDO DE ROSQUETES CANARIOS* ✨
+📋 *Pedido ID:* {ORDER_NUMBER}
+👤 *Cliente:* {CUSTOMER_NAME}
+📱 *Teléfono:* {CUSTOMER_PHONE}
+📍 *Zona de Entrega:* {DELIVERY_ZONE} ({DELIVERY_CITY})
+🏠 *Dirección:* {ADDRESS}
+
+🛒 *PRODUCTOS:*
+{ORDER_ITEMS}
+
+💰 *RESUMEN DE PAGO:*
+- Subtotal: {SUBTOTAL_USD} USD
+- Delivery: {DELIVERY_FEE_USD} USD
+*TOTAL A PAGAR: {TOTAL_USD} USD* (Bs. {TOTAL_VES} VES @ Tasa {EXCHANGE_RATE})
+
+💳 *Método de Pago:* {PAYMENT_METHOD}
+🔑 *Ref. Pago:* {PAYMENT_REF}
+
+¡Muchas gracias por preferir la tradición artesanal de Aragua! 🍩`,
     pagoMovilBank: s.pago_movil_bank,
     pagoMovilRif: s.pago_movil_rif,
     pagoMovilPhone: s.pago_movil_phone,
