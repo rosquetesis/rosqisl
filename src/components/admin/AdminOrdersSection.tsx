@@ -84,9 +84,82 @@ export const AdminOrdersSection: React.FC<AdminOrdersSectionProps> = ({
         </div>
       </div>
 
-      {/* Orders Table */}
+      {/* Orders — card view on mobile, table on md+ */}
       <div className="bg-white rounded-3xl border border-[#E5DED4] shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
+
+        {/* Mobile card list (hidden on md+) */}
+        <div className="md:hidden divide-y divide-[#E5DED4]">
+          {filteredOrders.length === 0 ? (
+            <p className="p-8 text-center text-[#78604E] text-xs">No se encontraron pedidos.</p>
+          ) : filteredOrders.map(order => (
+            <div key={order.id} className="p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span className="font-mono font-bold text-[#3E2E22] text-xs block">{order.orderNumber}</span>
+                  <span className="text-[10px] text-[#78604E]">
+                    {new Date(order.createdAt).toLocaleString('es-VE', { dateStyle: 'short', timeStyle: 'short' })}
+                  </span>
+                </div>
+                <select
+                  value={order.status}
+                  onChange={e => handleStatusChange(order.id, e.target.value as OrderStatus)}
+                  className={`text-[11px] font-extrabold px-2.5 py-1 rounded-xl border focus:outline-none cursor-pointer ${
+                    order.status === 'pendiente' ? 'bg-[#FEF3C7] text-[#4A3728] border-[#FDE68A]' :
+                    order.status === 'en_preparacion' ? 'bg-blue-100 text-blue-900 border-blue-300' :
+                    order.status === 'listo' ? 'bg-emerald-100 text-emerald-900 border-emerald-300' :
+                    order.status === 'entregado' ? 'bg-purple-100 text-purple-900 border-purple-300' : 'bg-rose-100 text-rose-900 border-rose-300'
+                  }`}
+                >
+                  <option value="pendiente">Pendiente</option>
+                  <option value="confirmado">Confirmado</option>
+                  <option value="en_preparacion">En Preparación</option>
+                  <option value="listo">Listo</option>
+                  <option value="entregado">Entregado</option>
+                  <option value="cancelado">Cancelado</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <div>
+                  <p className="font-bold text-[#3E2E22]">{order.customerName}</p>
+                  <p className="font-mono text-[10px] text-[#78604E]">{order.customerPhone}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-[#3E2E22] font-mono">${order.totalUSD.toFixed(2)} USD</p>
+                  <p className="text-[10px] text-[#78604E]">{order.deliveryZone}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => handleVerifyPayment(order)}
+                  className={`text-[10px] font-extrabold px-2.5 py-1 rounded-lg border cursor-pointer ${
+                    order.paymentVerified
+                      ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                      : 'bg-[#FEF3C7] text-[#4A3728] border-[#FDE68A]'
+                  }`}
+                >
+                  {order.paymentVerified ? '✓ Pago Verificado' : '⏳ Verificar Pago'}
+                </button>
+
+                <div className="flex items-center gap-1">
+                  <button onClick={() => setSelectedOrderDetails(order)} className="p-1.5 text-[#78604E] hover:bg-[#F4EFEA] rounded-lg cursor-pointer" title="Ver Detalles">
+                    <Eye className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => onSelectOrderForReceipt(order)} className="p-1.5 text-[#78604E] hover:bg-[#F4EFEA] rounded-lg cursor-pointer" title="Imprimir">
+                    <Printer className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => onDeleteOrder(order.id)} className="p-1.5 text-rose-600 hover:bg-rose-100 rounded-lg cursor-pointer" title="Eliminar">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop table (hidden on mobile) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs text-[#3E2E22]">
             <thead>
               <tr className="bg-[#3E2E22] text-[#FDFBF7] font-bold uppercase text-[10px] tracking-wider">

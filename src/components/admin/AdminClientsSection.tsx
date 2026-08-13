@@ -77,9 +77,38 @@ export const AdminClientsSection: React.FC<AdminClientsSectionProps> = ({
         />
       </div>
 
-      {/* Clients Table */}
+      {/* Clients — card view on mobile, table on md+ */}
       <div className="bg-white rounded-3xl border border-[#E5DED4] shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
+
+        {/* Mobile cards */}
+        <div className="md:hidden divide-y divide-[#E5DED4]">
+          {filteredClients.length === 0 ? (
+            <p className="p-8 text-center text-[#78604E] text-xs">No se encontraron clientes registrados.</p>
+          ) : filteredClients.map(client => (
+            <div key={client.id} className="p-4 space-y-2">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-bold text-[#3E2E22] text-xs flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-[#D97706]" />{client.name}
+                  </p>
+                  <p className="font-mono text-[10px] text-[#78604E]">{client.phone}</p>
+                  <p className="text-[10px] text-[#78604E]">{client.email || 'Sin correo'}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => handleOpenEdit(client)} className="p-1.5 text-[#78604E] hover:bg-[#F4EFEA] rounded-lg cursor-pointer"><Edit3 className="w-4 h-4" /></button>
+                  <button onClick={() => onDeleteClient(client.id)} className="p-1.5 text-rose-600 hover:bg-rose-100 rounded-lg cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold bg-[#F4EFEA] text-[#3E2E22] border border-[#E5DED4] px-2 py-0.5 rounded-md text-[10px]">{client.city}</span>
+                <span className="font-mono font-bold text-[#3E2E22]">${client.totalSpentUSD.toFixed(2)} USD · {client.totalOrders} pedidos</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs text-[#3E2E22]">
             <thead>
               <tr className="bg-[#3E2E22] text-[#FDFBF7] font-bold uppercase text-[10px]">

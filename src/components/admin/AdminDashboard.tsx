@@ -62,13 +62,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [activeTab, setActiveTab] = useState<string>('overview');
 
   const navItems = [
-    { id: 'overview', label: 'Resumen', icon: LayoutDashboard },
-    { id: 'settings', label: 'Configuración General', icon: Settings },
-    { id: 'pedidos', label: 'Pedidos Realizados', icon: ShoppingBag, badge: orders.filter(o => o.status === 'pendiente').length },
-    { id: 'inventario', label: 'Producto Elaborado', icon: Package },
-    { id: 'clientes', label: 'CRUD Clientes', icon: Users },
-    { id: 'ingredientes', label: 'Control Ingredientes', icon: Cookie },
-    { id: 'reportes', label: 'Informes Ventas & IA', icon: BarChart3 },
+    { id: 'overview', label: 'Resumen', shortLabel: 'Resumen', icon: LayoutDashboard },
+    { id: 'settings', label: 'Configuración', shortLabel: 'Config.', icon: Settings },
+    { id: 'pedidos', label: 'Pedidos', shortLabel: 'Pedidos', icon: ShoppingBag, badge: orders.filter(o => o.status === 'pendiente').length },
+    { id: 'inventario', label: 'Inventario', shortLabel: 'Inventario', icon: Package },
+    { id: 'clientes', label: 'Clientes', shortLabel: 'Clientes', icon: Users },
+    { id: 'ingredientes', label: 'Ingredientes', shortLabel: 'Ingredientes', icon: Cookie },
+    { id: 'reportes', label: 'Informes', shortLabel: 'Informes', icon: BarChart3 },
   ];
 
   const handleToggleDispatchMode = async (mode: 'whatsapp' | 'email' | 'both') => {
@@ -148,32 +148,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Main Container with Tab Navigation */}
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Navigation Tabs Bar */}
-        <div className="flex flex-wrap items-center gap-2 bg-[#F4EFEA] p-1.5 rounded-2xl border border-[#E5DED4] shadow-xs">
-          {navItems.map(item => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
+        {/* Navigation Tabs Bar — horizontally scrollable on mobile */}
+        <div className="overflow-x-auto -mx-1 px-1 pb-1">
+          <div className="flex items-center gap-1.5 bg-[#F4EFEA] p-1.5 rounded-2xl border border-[#E5DED4] shadow-xs min-w-max">
+            {navItems.map(item => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
 
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-[#3E2E22] text-[#FDFBF7] shadow-md scale-100'
-                    : 'text-[#3E2E22] hover:bg-[#EFECE6]'
-                }`}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span>{item.label}</span>
-                {item.badge !== undefined && item.badge > 0 && (
-                  <span className="bg-[#D97706] text-white font-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
+                    isActive
+                      ? 'bg-[#3E2E22] text-[#FDFBF7] shadow-md'
+                      : 'text-[#3E2E22] hover:bg-[#EFECE6]'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="bg-[#D97706] text-white font-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Tab Content Panels */}
