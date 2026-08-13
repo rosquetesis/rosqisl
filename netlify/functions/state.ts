@@ -56,13 +56,21 @@ export const handler: Handler = async (event) => {
 
 // ─── DB → Frontend mappers ────────────────────────────────────────────────────
 
+function fixImagePath(url: string | null | undefined, fallback = '/images/rosquetes_glaseados_islenos_1786561725949.jpg'): string {
+  if (!url) return fallback;
+  if (url.startsWith('/src/assets/images/')) {
+    return url.replace('/src/assets/images/', '/images/');
+  }
+  return url;
+}
+
 function mapSettings(s: any) {
   return {
     storeName: s.store_name,
     storeBadge: s.store_badge,
     storeTagline: s.store_tagline,
     storeLogoType: s.store_logo_type,
-    storeLogoValue: s.store_logo_value,
+    storeLogoValue: fixImagePath(s.store_logo_value, '/images/rosqueticos_logo_brand_1786561715713.jpg'),
     storeAddress: s.store_address,
     exchangeRateVES: s.exchange_rate_ves,
     dispatchMode: s.dispatch_mode,
@@ -101,7 +109,7 @@ function mapSettings(s: any) {
     adminPassword: '', // Never send password to client
     lastBCVSyncDate: s.last_bcv_sync_date,
     autoSyncBCVRate: s.auto_sync_bcv_rate ?? true,
-    heroImageUrl: s.hero_image_url || '/images/rosquetes_hero_1786559273650.jpg',
+    heroImageUrl: fixImagePath(s.hero_image_url, '/images/rosquetes_hero_1786559273650.jpg'),
     heroBadgeText: s.hero_badge_text || 'Presentación Estrella',
     heroStarTitle: s.hero_star_title || 'Docena Tradicional Glaseada',
     heroStarPriceUSD: s.hero_star_price_usd ?? 4.50,
@@ -116,7 +124,7 @@ function mapProduct(p: any) {
     description: p.description,
     priceUSD: p.price_usd,
     unitType: p.unit_type,
-    image: p.image,
+    image: fixImagePath(p.image, '/images/rosquetes_glaseados_islenos_1786561725949.jpg'),
     stockElaborado: p.stock_elaborado,
     category: p.category,
     featured: p.featured,
