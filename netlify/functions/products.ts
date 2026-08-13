@@ -2,7 +2,7 @@
  * POST /api/products  — Create or update a product
  */
 import type { Handler } from '@netlify/functions';
-import { jsonResponse, optionsResponse, getSupabaseAdmin, sanitizeStr, sanitizeNum, sanitizeInt } from './_utils.mjs';
+import { jsonResponse, optionsResponse, getSupabaseAdmin, sanitizeStr, sanitizeNum, sanitizeInt } from './_utils';
 
 const VALID_CATEGORIES = ['tradicional', 'mini', 'regalo', 'especial'];
 

@@ -6,7 +6,7 @@
  */
 import type { Handler } from '@netlify/functions';
 import https from 'https';
-import { jsonResponse, optionsResponse, getSupabaseAdmin, parseBCVRate } from './_utils.mjs';
+import { jsonResponse, optionsResponse, getSupabaseAdmin, parseBCVRate } from './_utils';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return optionsResponse();

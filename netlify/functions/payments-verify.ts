@@ -2,7 +2,7 @@
  * POST /api/payments/verify — Simulate payment verification
  */
 import type { Handler } from '@netlify/functions';
-import { jsonResponse, optionsResponse, sanitizeStr, sanitizeNum } from './_utils.mjs';
+import { jsonResponse, optionsResponse, sanitizeStr, sanitizeNum } from './_utils';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return optionsResponse();

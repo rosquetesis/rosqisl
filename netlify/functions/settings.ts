@@ -5,7 +5,7 @@
  * Admin-password change allowed but never returned to client.
  */
 import type { Handler } from '@netlify/functions';
-import { jsonResponse, optionsResponse, getSupabaseAdmin, sanitizeStr, sanitizeNum } from './_utils.mjs';
+import { jsonResponse, optionsResponse, getSupabaseAdmin, sanitizeStr, sanitizeNum } from './_utils';
 
 const ALLOWED_SETTINGS_KEYS = [
   'store_name', 'store_badge', 'store_tagline', 'store_logo_type', 'store_logo_value',

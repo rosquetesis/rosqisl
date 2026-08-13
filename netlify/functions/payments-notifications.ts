@@ -3,7 +3,7 @@
  * Returns recent unread payment notifications from Supabase orders.
  */
 import type { Handler } from '@netlify/functions';
-import { jsonResponse, optionsResponse, getSupabaseAdmin } from './_utils.mjs';
+import { jsonResponse, optionsResponse, getSupabaseAdmin } from './_utils';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return optionsResponse();

@@ -7,7 +7,7 @@ import type { Handler } from '@netlify/functions';
 import {
   jsonResponse, optionsResponse, getSupabaseAdmin,
   sanitizeStr, sanitizeNum, isSafeId,
-} from './_utils.mjs';
+} from './_utils';
 
 const VALID_STATUSES = ['pendiente', 'confirmado', 'en_preparacion', 'listo', 'entregado', 'cancelado'];
 

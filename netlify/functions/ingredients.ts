@@ -6,7 +6,7 @@ import type { Handler } from '@netlify/functions';
 import {
   jsonResponse, optionsResponse, getSupabaseAdmin,
   sanitizeStr, sanitizeNum, isSafeId,
-} from './_utils.mjs';
+} from './_utils';
 
 const VALID_CATEGORIES = ['harina', 'azucar', 'especias', 'liquidos', 'empaque', 'otros'];
 const VALID_UNITS = ['kg', 'g', 'litros', 'ml', 'unidades', 'sacos', 'cartones', 'cajas', 'mallas'];

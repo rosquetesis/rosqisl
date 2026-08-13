@@ -4,7 +4,7 @@
  * GEMINI_API_KEY is server-side only — never exposed to the browser.
  */
 import type { Handler } from '@netlify/functions';
-import { jsonResponse, optionsResponse, getSupabaseAdmin } from './_utils.mjs';
+import { jsonResponse, optionsResponse, getSupabaseAdmin } from './_utils';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return optionsResponse();
