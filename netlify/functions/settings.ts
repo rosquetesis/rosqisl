@@ -5,7 +5,7 @@
  * Admin-password change allowed but never returned to client.
  */
 import type { Handler } from '@netlify/functions';
-import { jsonResponse, optionsResponse, getSupabaseAdmin, sanitizeStr, sanitizeNum } from './_utils';
+import { jsonResponse, optionsResponse, getSupabaseAdmin, sanitizeStr, sanitizeNum, sanitizeImage } from './_utils';
 
 const ALLOWED_SETTINGS_KEYS = [
   'store_name', 'store_badge', 'store_tagline', 'store_logo_type', 'store_logo_value',
@@ -14,7 +14,7 @@ const ALLOWED_SETTINGS_KEYS = [
   'pago_movil_rif', 'pago_movil_phone', 'pago_movil_owner',
   'online_payments_enabled', 'auto_verify_online_payments',
   'payment_methods', 'delivery_zones', 'admin_username', 'admin_password',
-  'last_bcv_sync_date', 'auto_sync_bcv_rate',
+  'last_bcv_sync_date', 'auto_sync_bcv_rate', 'hero_image_url', 'feature_cards'
 ];
 
 export const handler: Handler = async (event) => {
@@ -33,7 +33,7 @@ export const handler: Handler = async (event) => {
 
   const strMap: Record<string, string> = {
     storeName: 'store_name', storeBadge: 'store_badge', storeTagline: 'store_tagline',
-    storeLogoType: 'store_logo_type', storeLogoValue: 'store_logo_value',
+    storeLogoType: 'store_logo_type',
     storeAddress: 'store_address', dispatchMode: 'dispatch_mode',
     whatsappNumber: 'whatsapp_number', emailRecipient: 'email_recipient',
     whatsappMessageTemplate: 'whatsapp_message_template',
@@ -45,8 +45,16 @@ export const handler: Handler = async (event) => {
 
   for (const [front, db] of Object.entries(strMap)) {
     if (front in body && body[front] !== undefined) {
-      update[db] = sanitizeStr(body[front], front === 'storeLogoValue' ? 2000 : 500);
+      update[db] = sanitizeStr(body[front]);
     }
+  }
+
+  // Handle images specifically to allow large Base64 strings
+  if ('storeLogoValue' in body && body.storeLogoValue !== undefined) {
+    update['store_logo_value'] = sanitizeImage(body.storeLogoValue);
+  }
+  if ('heroImageUrl' in body && body.heroImageUrl !== undefined) {
+    update['hero_image_url'] = sanitizeImage(body.heroImageUrl);
   }
 
   if ('exchangeRateVES' in body) update['exchange_rate_ves'] = sanitizeNum(body.exchangeRateVES);
@@ -60,6 +68,9 @@ export const handler: Handler = async (event) => {
   }
   if ('deliveryZones' in body && Array.isArray(body.deliveryZones)) {
     update['delivery_zones'] = body.deliveryZones;
+  }
+  if ('featureCards' in body && Array.isArray(body.featureCards)) {
+    update['feature_cards'] = body.featureCards;
   }
 
   if (Object.keys(update).length === 0) {

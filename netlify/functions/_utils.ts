@@ -69,6 +69,18 @@ export function sanitizeStr(value: unknown, maxLength = 500): string {
     .slice(0, maxLength);
 }
 
+/** Sanitize an image URL or Base64 string (allows much larger lengths) */
+export function sanitizeImage(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  // Max ~7MB for base64 images (5MB image + base64 overhead)
+  const maxLength = 7000000;
+  return value
+    .replace(/<[^>]*>/g, '')
+    .replace(/[<>"'`]/g, '')
+    .trim()
+    .slice(0, maxLength);
+}
+
 /** Parse a safe positive number, returns 0 if invalid */
 export function sanitizeNum(value: unknown): number {
   const n = parseFloat(String(value));

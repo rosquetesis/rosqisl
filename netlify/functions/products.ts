@@ -2,7 +2,7 @@
  * POST /api/products  — Create or update a product
  */
 import type { Handler } from '@netlify/functions';
-import { jsonResponse, optionsResponse, getSupabaseAdmin, sanitizeStr, sanitizeNum, sanitizeInt } from './_utils';
+import { jsonResponse, optionsResponse, getSupabaseAdmin, sanitizeStr, sanitizeNum, sanitizeInt, sanitizeImage } from './_utils';
 
 const VALID_CATEGORIES = ['tradicional', 'mini', 'regalo', 'especial'];
 
@@ -28,7 +28,7 @@ export const handler: Handler = async (event) => {
     description: sanitizeStr(body.description || '', 1000),
     price_usd: sanitizeNum(body.priceUSD),
     unit_type: sanitizeStr(body.unitType || 'Unidad', 100),
-    image: sanitizeStr(body.image || '', 2000),
+    image: sanitizeImage(body.image || ''),
     stock_elaborado: sanitizeInt(body.stockElaborado),
     category,
     featured: Boolean(body.featured),
