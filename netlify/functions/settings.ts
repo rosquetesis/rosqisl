@@ -39,8 +39,10 @@ export const handler: Handler = async (event) => {
     whatsappMessageTemplate: 'whatsapp_message_template',
     pagoMovilBank: 'pago_movil_bank', pagoMovilRif: 'pago_movil_rif',
     pagoMovilPhone: 'pago_movil_phone', pagoMovilOwner: 'pago_movil_owner',
+    zelleEmail: 'zelle_email', zelleOwner: 'zelle_owner',
     adminUsername: 'admin_username', adminPassword: 'admin_password',
     lastBCVSyncDate: 'last_bcv_sync_date',
+    heroBadgeText: 'hero_badge_text', heroStarTitle: 'hero_star_title',
   };
 
   for (const [front, db] of Object.entries(strMap)) {
@@ -58,6 +60,7 @@ export const handler: Handler = async (event) => {
   }
 
   if ('exchangeRateVES' in body) update['exchange_rate_ves'] = sanitizeNum(body.exchangeRateVES);
+  if ('heroStarPriceUSD' in body) update['hero_star_price_usd'] = sanitizeNum(body.heroStarPriceUSD);
   if ('onlinePaymentsEnabled' in body) update['online_payments_enabled'] = Boolean(body.onlinePaymentsEnabled);
   if ('autoVerifyOnlinePayments' in body) update['auto_verify_online_payments'] = Boolean(body.autoVerifyOnlinePayments);
   if ('autoSyncBCVRate' in body) update['auto_sync_bcv_rate'] = Boolean(body.autoSyncBCVRate);

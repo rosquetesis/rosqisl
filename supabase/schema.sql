@@ -209,6 +209,11 @@ ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS last_bcv_sync_date TIMESTAMP
 ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS auto_sync_bcv_rate BOOLEAN DEFAULT TRUE;
 ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS hero_image_url TEXT;
 ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS feature_cards JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS zelle_email VARCHAR(255);
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS zelle_owner VARCHAR(255);
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS hero_badge_text VARCHAR(255);
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS hero_star_title VARCHAR(255);
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS hero_star_price_usd NUMERIC(10,2) DEFAULT 4.50;
 
 SELECT 'Migración completada' AS status;
 

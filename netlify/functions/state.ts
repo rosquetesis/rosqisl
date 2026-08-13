@@ -73,14 +73,21 @@ function mapSettings(s: any) {
     pagoMovilRif: s.pago_movil_rif,
     pagoMovilPhone: s.pago_movil_phone,
     pagoMovilOwner: s.pago_movil_owner,
-    onlinePaymentsEnabled: s.online_payments_enabled,
-    autoVerifyOnlinePayments: s.auto_verify_online_payments,
+    zelleEmail: s.zelle_email || '',
+    zelleOwner: s.zelle_owner || '',
+    onlinePaymentsEnabled: s.online_payments_enabled ?? true,
+    autoVerifyOnlinePayments: s.auto_verify_online_payments ?? true,
     paymentMethods: s.payment_methods || [],
     deliveryZones: s.delivery_zones || [],
     adminUsername: s.admin_username || 'admin',
     adminPassword: '', // Never send password to client
     lastBCVSyncDate: s.last_bcv_sync_date,
-    autoSyncBCVRate: s.auto_sync_bcv_rate,
+    autoSyncBCVRate: s.auto_sync_bcv_rate ?? true,
+    heroImageUrl: s.hero_image_url || '/src/assets/images/rosquetes_hero_1786559273650.jpg',
+    heroBadgeText: s.hero_badge_text || 'Presentación Estrella',
+    heroStarTitle: s.hero_star_title || 'Docena Tradicional Glaseada',
+    heroStarPriceUSD: s.hero_star_price_usd ?? 4.50,
+    featureCards: s.feature_cards || [],
   };
 }
 
