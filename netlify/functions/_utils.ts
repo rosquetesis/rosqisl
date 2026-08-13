@@ -28,6 +28,23 @@ export const optionsResponse = () => ({
 });
 
 // ─── Supabase Admin Client (uses Service Role Key — never exposed to browser) ─
+// Dummy WebSocket for Node 18 (Netlify Functions) — Supabase Realtime requires it
+// but we never use Realtime in serverless, so this no-op class satisfies the check.
+class NoopWebSocket {
+  static CONNECTING = 0; static OPEN = 1; static CLOSING = 2; static CLOSED = 3;
+  readyState = 3;
+  constructor() {}
+  send() {}
+  close() {}
+  addEventListener() {}
+  removeEventListener() {}
+}
+
+// Inject into globalThis if missing so Supabase Realtime doesn't throw
+if (typeof globalThis.WebSocket === 'undefined') {
+  (globalThis as any).WebSocket = NoopWebSocket;
+}
+
 export function getSupabaseAdmin() {
   const url = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -36,6 +53,7 @@ export function getSupabaseAdmin() {
   }
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
+    db: { schema: 'public' },
   });
 }
 
