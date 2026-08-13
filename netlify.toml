@@ -1,0 +1,110 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Redirect all /api/* calls to Netlify Functions
+[[redirects]]
+  from = "/api/state"
+  to = "/.netlify/functions/state"
+  status = 200
+
+[[redirects]]
+  from = "/api/settings"
+  to = "/.netlify/functions/settings"
+  status = 200
+
+[[redirects]]
+  from = "/api/products"
+  to = "/.netlify/functions/products"
+  status = 200
+
+[[redirects]]
+  from = "/api/orders/*"
+  to = "/.netlify/functions/orders/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/orders"
+  to = "/.netlify/functions/orders"
+  status = 200
+
+[[redirects]]
+  from = "/api/clients/*"
+  to = "/.netlify/functions/clients/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/clients"
+  to = "/.netlify/functions/clients"
+  status = 200
+
+[[redirects]]
+  from = "/api/batches"
+  to = "/.netlify/functions/batches"
+  status = 200
+
+[[redirects]]
+  from = "/api/ingredients/*"
+  to = "/.netlify/functions/ingredients/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/api/ingredients"
+  to = "/.netlify/functions/ingredients"
+  status = 200
+
+[[redirects]]
+  from = "/api/bcv-rate"
+  to = "/.netlify/functions/bcv-rate"
+  status = 200
+
+[[redirects]]
+  from = "/api/payments/verify"
+  to = "/.netlify/functions/payments-verify"
+  status = 200
+
+[[redirects]]
+  from = "/api/payments/notifications"
+  to = "/.netlify/functions/payments-notifications"
+  status = 200
+
+[[redirects]]
+  from = "/api/ai/production-advice"
+  to = "/.netlify/functions/ai-advice"
+  status = 200
+
+# SPA fallback - serve index.html for all other routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ============================================================
+# SECURITY HEADERS - Applied to all routes
+# ============================================================
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://ve.dolarapi.com https://api.exchangerate.host https://open.er-api.com https://www.bcv.org.ve; frame-ancestors 'none';"
+
+# Cache static assets aggressively
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Short cache for BCV rate
+[[headers]]
+  for = "/.netlify/functions/bcv-rate"
+  [headers.values]
+    Cache-Control = "public, max-age=900, stale-while-revalidate=1800"

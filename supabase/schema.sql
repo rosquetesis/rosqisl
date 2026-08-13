@@ -198,3 +198,17 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Mensaje de confirmación en la consola
 SELECT 'Base de datos de Rosquetes Canarios configurada exitosamente para Supabase' AS status;
+
+-- ==============================================================================
+-- MIGRACIÓN: Columnas adicionales (ejecutar si la tabla ya existía)
+-- Estas sentencias son seguras (IF NOT EXISTS) y puedes ejecutarlas siempre.
+-- ==============================================================================
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS admin_username VARCHAR(100) DEFAULT 'admin';
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS admin_password VARCHAR(255) DEFAULT 'admin2026';
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS last_bcv_sync_date TIMESTAMP WITH TIME ZONE;
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS auto_sync_bcv_rate BOOLEAN DEFAULT TRUE;
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS hero_image_url TEXT;
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS feature_cards JSONB DEFAULT '[]'::jsonb;
+
+SELECT 'Migración completada' AS status;
+

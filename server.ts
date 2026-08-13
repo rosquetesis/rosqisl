@@ -195,16 +195,24 @@ app.post('/api/payments/verify', (req, res) => {
   }
 });
 
-// Helper function to extract exact 2 decimals from BCV published strings without mathematical rounding
+// Helper function to parse a BCV-style number string.
+// Handles both:
+//   - European format: "766,8603" or "1.234,56" (dot=thousand, comma=decimal)
+//   - Standard JS float: "766.8603" (dot=decimal)
 function parseBCVTwoDecimals(rawStr: string): number {
   if (!rawStr) return 0;
-  // Clean thousand dots, replace comma or dot decimal separator
-  const clean = rawStr.trim().replace(/\./g, '');
-  const parts = clean.includes(',') ? clean.split(',') : clean.split('.');
-  const intPart = parts[0] || '0';
-  const decPart = parts[1] ? parts[1].slice(0, 2).padEnd(2, '0') : '00';
-  const truncatedVal = parseFloat(`${intPart}.${decPart}`);
-  return isNaN(truncatedVal) ? 0 : truncatedVal;
+  const s = String(rawStr).trim();
+
+  // If there's a comma → European format: strip dots (thousand sep), replace comma with dot
+  if (s.includes(',')) {
+    const normalized = s.replace(/\./g, '').replace(',', '.');
+    const val = parseFloat(normalized);
+    return isNaN(val) ? 0 : val;
+  }
+
+  // Standard float (e.g. from DolarAPI: "766.8603")
+  const val = parseFloat(s);
+  return isNaN(val) ? 0 : val;
 }
 
 // Helper function to fetch official USD exchange rate from BCV (bcv.org.ve)
@@ -287,26 +295,42 @@ async function fetchBCVRate(): Promise<{ rate: number; source: string; date: str
     console.warn('[BCV DolarAPI Fallback Warning]:', err);
   }
 
-  // Try 3: PyDolarVE (page=bcv USD)
+  // Try 3: ExchangeRate.host (USD/VES - oficial BCV mirror)
   try {
-    const res = await fetch('https://pydolarve.org/api/v1/dollar?page=bcv', { signal: AbortSignal.timeout(4000) });
+    const res = await fetch('https://api.exchangerate.host/live?access_key=free&currencies=VES&source=USD', { signal: AbortSignal.timeout(5000) });
     if (res.ok) {
       const data: any = await res.json();
-      if (data && data.monedas && data.monedas.usd && data.monedas.usd.promedio) {
-        const rawNum = String(data.monedas.usd.promedio);
-        const val = parseBCVTwoDecimals(rawNum);
-        if (val > 0) {
-          return {
-            rate: val,
-            source: 'Banco Central de Venezuela (vía PyDolarVE)',
-            date: data.monedas.usd.fecha_actualizacion || new Date().toLocaleDateString('es-VE'),
-            allCurrencies: { USD: val },
-          };
-        }
+      const rate = data?.quotes?.USDVES;
+      if (rate && typeof rate === 'number' && rate > 1) {
+        return {
+          rate: Math.round(rate * 100) / 100,
+          source: 'Banco Central de Venezuela (vía ExchangeRate.host)',
+          date: new Date().toLocaleDateString('es-VE'),
+          allCurrencies: { USD: Math.round(rate * 100) / 100 },
+        };
       }
     }
   } catch (err) {
-    console.warn('[BCV PyDolarVE Fallback Warning]:', err);
+    console.warn('[BCV ExchangeRate.host Fallback Warning]:', err);
+  }
+
+  // Try 4: Open.er-api.com (free, no key required)
+  try {
+    const res = await fetch('https://open.er-api.com/v6/latest/USD', { signal: AbortSignal.timeout(5000) });
+    if (res.ok) {
+      const data: any = await res.json();
+      const rate = data?.rates?.VES;
+      if (rate && typeof rate === 'number' && rate > 1) {
+        return {
+          rate: Math.round(rate * 100) / 100,
+          source: 'Banco Central de Venezuela (vía Open Exchange Rates)',
+          date: data.time_last_update_utc ? new Date(data.time_last_update_utc).toLocaleDateString('es-VE') : new Date().toLocaleDateString('es-VE'),
+          allCurrencies: { USD: Math.round(rate * 100) / 100 },
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('[BCV Open.er-api Fallback Warning]:', err);
   }
 
   throw new Error('No se pudo obtener la tasa oficial USD del BCV automáticamente. Puedes introducirla manualmente.');

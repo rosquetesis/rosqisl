@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, User, X, Sparkles, Eye, EyeOff } from 'lucide-react';
+import { ShieldCheck, Lock, User, X, Eye, EyeOff } from 'lucide-react';
 import { AdminSettings } from '../types';
 
 interface AdminAuthModalProps {
@@ -15,7 +15,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
   onSuccessLogin,
   settings,
 }) => {
-  const [username, setUsername] = useState('admin');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -29,27 +29,17 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
     e.preventDefault();
     const cleanUser = username.trim().toLowerCase();
     const expectedUser = validUsername.trim().toLowerCase();
-
-    // Check if credentials match or password matches valid password/pin
-    const isUserMatch = cleanUser === expectedUser || cleanUser === 'admin';
-    const isPassMatch =
-      password === validPassword ||
-      password === 'admin2026' ||
-      password === 'admin' ||
-      password === '1234';
-
-    if ((isUserMatch && isPassMatch) || (password === validPassword)) {
+    const isUserMatch = cleanUser === expectedUser;
+    const isPassMatch = password === validPassword;
+    if (isUserMatch && isPassMatch) {
       onSuccessLogin();
       onClose();
     } else {
-      setError(`Credenciales incorrectas. Revisa usuario y contraseña o utiliza el Acceso Demo.`);
+      setError('Credenciales incorrectas. Verifica tu usuario y contraseña.');
     }
   };
 
-  const handleDemoAccess = () => {
-    onSuccessLogin();
-    onClose();
-  };
+
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
@@ -126,23 +116,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
             Iniciar Sesión
           </button>
 
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#5D4636]" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-[#3E2E22] px-2 text-[#FEF3C7] font-mono">O ACCESO RÁPIDO</span>
-            </div>
-          </div>
 
-          <button
-            type="button"
-            onClick={handleDemoAccess}
-            className="w-full flex items-center justify-center gap-2 bg-[#4A3728] hover:bg-[#5D4636] text-[#FDFBF7] font-bold py-2.5 rounded-xl text-xs border border-[#5D4636] shadow-sm transition-all cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>Entrar Directo como Super Admin (Demo)</span>
-          </button>
         </form>
       </div>
     </div>
