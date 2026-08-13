@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Package, Plus, Flame, CheckCircle2, AlertCircle, Clock, Eye, EyeOff, Edit3, PlusCircle, Sparkles, Check, X, Image as ImageIcon, Upload } from 'lucide-react';
-import { Product, ProductionBatch } from '../../types';
+import { Ingredient, Product, ProductionBatch, ProductRecipe } from '../../types';
+import { compressImageFile } from '../../lib/imageCompressor';
 
 interface AdminInventorySectionProps {
   products: Product[];
@@ -550,16 +551,15 @@ export const AdminInventorySection: React.FC<AdminInventorySectionProps> = ({
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            if (reader.result) {
-                              setProductForm(prev => ({ ...prev, image: reader.result as string }));
-                            }
-                          };
-                          reader.readAsDataURL(file);
+                          try {
+                            const compressed = await compressImageFile(file, 800, 0.75);
+                            setProductForm(prev => ({ ...prev, image: compressed }));
+                          } catch (err) {
+                            console.error('Error compressing product image', err);
+                          }
                         }
                       }}
                     />

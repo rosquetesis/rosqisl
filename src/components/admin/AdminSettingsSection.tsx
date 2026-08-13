@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Save, Send, Mail, DollarSign, MapPin, CreditCard, ShieldCheck, Plus, Trash2, CheckCircle2, Store, Image as ImageIcon, Sparkles, Upload, Eye, RefreshCw, Globe, Sparkle } from 'lucide-react';
-import { AdminSettings, DeliveryZone, FeatureCard } from '../../types';
+import { AdminSettings, CustomPaymentMethod, DeliveryZone, FeatureCard } from '../../types';
 import { PaymentMethodsManager } from './PaymentMethodsManager';
+import { compressImageFile } from '../../lib/imageCompressor';
 
 interface AdminSettingsSectionProps {
   settings: AdminSettings;
@@ -51,23 +52,18 @@ export const AdminSettingsSection: React.FC<AdminSettingsSectionProps> = ({
   const [bcvStatusMsg, setBcvStatusMsg] = useState('');
   const [bcvCurrencies, setBcvCurrencies] = useState<Record<string, number> | null>(null);
 
-  const handleHeroImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHeroImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('La imagen no debe superar los 5MB.');
-        return;
+      try {
+        const compressed = await compressImageFile(file, 1000, 0.75);
+        setFormState(prev => ({
+          ...prev,
+          heroImageUrl: compressed,
+        }));
+      } catch (err) {
+        console.error('Error compressing hero image', err);
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          setFormState(prev => ({
-            ...prev,
-            heroImageUrl: reader.result as string,
-          }));
-        }
-      };
-      reader.readAsDataURL(file);
     }
   };
 
@@ -111,17 +107,16 @@ export const AdminSettingsSection: React.FC<AdminSettingsSectionProps> = ({
     setFormState(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileUploadLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          handleChange('storeLogoType', 'image');
-          handleChange('storeLogoValue', reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressed = await compressImageFile(file, 600, 0.8);
+        handleChange('storeLogoType', 'image');
+        handleChange('storeLogoValue', compressed);
+      } catch (err) {
+        console.error('Error compressing logo', err);
+      }
     }
   };
 
