@@ -13,7 +13,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   exchangeRateVES,
   settings,
 }) => {
-  const heroImage = settings?.heroImageUrl || '/src/assets/images/rosquetes_hero_1786559273650.jpg';
+  const heroImage = settings?.heroImageUrl || '/images/rosquetes_hero_1786559273650.jpg';
   const badgeText = settings?.heroBadgeText || 'Presentación Estrella';
   const starTitle = settings?.heroStarTitle || 'Docena Tradicional Glaseada';
   const starPriceUSD = settings?.heroStarPriceUSD ?? 4.50;
@@ -79,10 +79,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div className="lg:col-span-5 relative">
           <div className="relative mx-auto max-w-md lg:max-w-none rounded-3xl overflow-hidden shadow-2xl border-2 border-[#5D4636] group">
             <img
-              src={heroImage}
+              src={heroImage || '/images/rosquetes_hero_1786559273650.jpg'}
               alt={starTitle}
               className="w-full h-80 sm:h-96 object-cover transform group-hover:scale-105 transition-transform duration-700"
               referrerPolicy="no-referrer"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/images/rosquetes_hero_1786559273650.jpg';
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#3E2E22]/90 via-transparent to-transparent flex flex-col justify-end p-6">
               <div className="bg-[#3E2E22]/90 backdrop-blur-md p-3.5 rounded-2xl border border-[#5D4636] flex items-center justify-between">

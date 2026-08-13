@@ -101,7 +101,7 @@ function mapSettings(s: any) {
     adminPassword: '', // Never send password to client
     lastBCVSyncDate: s.last_bcv_sync_date,
     autoSyncBCVRate: s.auto_sync_bcv_rate ?? true,
-    heroImageUrl: s.hero_image_url || '/src/assets/images/rosquetes_hero_1786559273650.jpg',
+    heroImageUrl: s.hero_image_url || '/images/rosquetes_hero_1786559273650.jpg',
     heroBadgeText: s.hero_badge_text || 'Presentación Estrella',
     heroStarTitle: s.hero_star_title || 'Docena Tradicional Glaseada',
     heroStarPriceUSD: s.hero_star_price_usd ?? 4.50,

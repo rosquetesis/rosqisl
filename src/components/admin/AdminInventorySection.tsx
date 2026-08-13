@@ -41,7 +41,7 @@ export const AdminInventorySection: React.FC<AdminInventorySectionProps> = ({
     unitType: 'Docena (12 u.)',
     category: 'tradicional',
     stockElaborado: 20,
-    image: '/src/assets/images/rosquetes_glaseados_islenos_1786561725949.jpg',
+    image: '/images/rosquetes_glaseados_islenos_1786561725949.jpg',
     isPublished: true,
   });
 
@@ -90,7 +90,7 @@ export const AdminInventorySection: React.FC<AdminInventorySectionProps> = ({
       unitType: 'Docena (12 u.)',
       category: 'tradicional',
       stockElaborado: 20,
-      image: '/src/assets/images/rosquetes_glaseados_islenos_1786561725949.jpg',
+      image: '/images/rosquetes_glaseados_islenos_1786561725949.jpg',
       isPublished: true,
     });
     setIsNewProductModalOpen(true);
@@ -108,7 +108,7 @@ export const AdminInventorySection: React.FC<AdminInventorySectionProps> = ({
       unitType: productForm.unitType || 'Docena (12 u.)',
       category: (productForm.category as any) || 'tradicional',
       stockElaborado: Number(productForm.stockElaborado || 0),
-      image: productForm.image || '/src/assets/images/rosquetes_glaseados_islenos_1786561725949.jpg',
+      image: productForm.image || '/images/rosquetes_glaseados_islenos_1786561725949.jpg',
       isPublished: productForm.isPublished ?? true,
     };
 
@@ -577,11 +577,11 @@ export const AdminInventorySection: React.FC<AdminInventorySectionProps> = ({
                   </span>
                   <div className="grid grid-cols-5 gap-1.5">
                     {[
-                      { label: 'Glaseado Isleño', url: '/src/assets/images/rosquetes_glaseados_islenos_1786561725949.jpg' },
-                      { label: 'Limón & Anís', url: '/src/assets/images/rosquetes_limon_anis_islenos_1786561735636.jpg' },
-                      { label: 'Bolsa Mini', url: '/src/assets/images/rosqueticos_mini_bolsa_1786561744404.jpg' },
-                      { label: 'Caja Regalo', url: '/src/assets/images/rosquetes_caja_regalo_1786561754538.jpg' },
-                      { label: 'Logo Marca', url: '/src/assets/images/rosqueticos_logo_brand_1786561715713.jpg' },
+                      { label: 'Glaseado Isleño', url: '/images/rosquetes_glaseados_islenos_1786561725949.jpg' },
+                      { label: 'Limón & Anís', url: '/images/rosquetes_limon_anis_islenos_1786561735636.jpg' },
+                      { label: 'Bolsa Mini', url: '/images/rosqueticos_mini_bolsa_1786561744404.jpg' },
+                      { label: 'Caja Regalo', url: '/images/rosquetes_caja_regalo_1786561754538.jpg' },
+                      { label: 'Logo Marca', url: '/images/rosqueticos_logo_brand_1786561715713.jpg' },
                     ].map((preset, idx) => (
                       <button
                         key={idx}

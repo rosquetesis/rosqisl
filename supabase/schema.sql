@@ -179,8 +179,8 @@ INSERT INTO store_settings (
 -- 3. PRODUCTOS DEL CATÁLOGO INICIAL
 INSERT INTO products (id, name, description, price_usd, unit_type, image, stock_elaborado, category, featured)
 VALUES
-('rosquete-glaseado-docena', 'Rosquetes Canarios Glaseados', 'Rosquetes horneados esponjosos recubiertos de un dulce glaseado blanco artesanal.', 8.50, 'Docena (12 u.)', '/src/assets/images/rosquetes_hero_1786559273650.jpg', 42, 'tradicional', true),
-('rosquete-limon-anis-docena', 'Rosquetes de Limón y Matalahúva (Anís)', 'Receta tradicional canaria infusionada con ralladura de limón verde aragüeño y matalahúva pura.', 9.00, 'Docena (12 u.)', '/src/assets/images/rosquetes_product_1786559285375.jpg', 30, 'tradicional', true),
+('rosquete-glaseado-docena', 'Rosquetes Canarios Glaseados', 'Rosquetes horneados esponjosos recubiertos de un dulce glaseado blanco artesanal.', 8.50, 'Docena (12 u.)', '/images/rosquetes_hero_1786559273650.jpg', 42, 'tradicional', true),
+('rosquete-limon-anis-docena', 'Rosquetes de Limón y Matalahúva (Anís)', 'Receta tradicional canaria infusionada con ralladura de limón verde aragüeño y matalahúva pura.', 9.00, 'Docena (12 u.)', '/images/rosquetes_product_1786559285375.jpg', 30, 'tradicional', true),
 ('mini-rosqueticos-bolsa', 'Mini Rosqueticos Crocantes (Bolsa 250g)', 'Bocaditos crujientes ideales para acompañar con café matutino o merienda familiar.', 4.50, 'Bolsa 250g', 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=800&auto=format&fit=crop', 60, 'mini', false),
 ('caja-regalo-canaria', 'Caja Regalo "Recuerdo Canario-Aragüeño"', 'Hermosa presentación tipo regalo con 18 rosquetes surtidos y moño artesanal de yute.', 15.00, 'Caja Especial 18 u.', 'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?q=80&w=800&auto=format&fit=crop', 15, 'regalo', true)
 ON CONFLICT (id) DO NOTHING;

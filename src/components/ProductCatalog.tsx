@@ -99,10 +99,13 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
               {/* Image Header */}
               <div className="relative h-56 overflow-hidden bg-[#F4EFEA]">
                 <img
-                  src={product.image}
+                  src={product.image || '/images/rosquetes_glaseados_islenos_1786561725949.jpg'}
                   alt={product.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/rosquetes_glaseados_islenos_1786561725949.jpg';
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
 

@@ -38,7 +38,7 @@ export const AdminSettingsSection: React.FC<AdminSettingsSectionProps> = ({
     ...settings,
     adminUsername: settings.adminUsername || 'admin',
     adminPassword: settings.adminPassword || 'admin2026',
-    heroImageUrl: settings.heroImageUrl || '/src/assets/images/rosquetes_hero_1786559273650.jpg',
+    heroImageUrl: settings.heroImageUrl || '/images/rosquetes_hero_1786559273650.jpg',
     heroBadgeText: settings.heroBadgeText || 'Presentación Estrella',
     heroStarTitle: settings.heroStarTitle || 'Docena Tradicional Glaseada',
     heroStarPriceUSD: settings.heroStarPriceUSD ?? 4.50,
@@ -96,11 +96,11 @@ export const AdminSettingsSection: React.FC<AdminSettingsSectionProps> = ({
 
   const presetEmojis = ['🍩', '🥖', '🌾', '👑', '☕', '🧁', '🥐', '⭐', '🍪', '🥨'];
   const presetImages = [
-    { label: 'Logo Insignia Rosqueticos Isleños', url: '/src/assets/images/rosqueticos_logo_brand_1786561715713.jpg' },
-    { label: 'Rosqueticos Glaseados Isleños', url: '/src/assets/images/rosquetes_glaseados_islenos_1786561725949.jpg' },
-    { label: 'Rosqueticos Limón & Anís', url: '/src/assets/images/rosquetes_limon_anis_islenos_1786561735636.jpg' },
-    { label: 'Bolsa Mini Rosqueticos', url: '/src/assets/images/rosqueticos_mini_bolsa_1786561744404.jpg' },
-    { label: 'Caja Regalo Rosqueticos', url: '/src/assets/images/rosquetes_caja_regalo_1786561754538.jpg' },
+    { label: 'Logo Insignia Rosqueticos Isleños', url: '/images/rosqueticos_logo_brand_1786561715713.jpg' },
+    { label: 'Rosqueticos Glaseados Isleños', url: '/images/rosquetes_glaseados_islenos_1786561725949.jpg' },
+    { label: 'Rosqueticos Limón & Anís', url: '/images/rosquetes_limon_anis_islenos_1786561735636.jpg' },
+    { label: 'Bolsa Mini Rosqueticos', url: '/images/rosqueticos_mini_bolsa_1786561744404.jpg' },
+    { label: 'Caja Regalo Rosqueticos', url: '/images/rosquetes_caja_regalo_1786561754538.jpg' },
   ];
 
   const handleChange = (field: keyof AdminSettings, value: any) => {
@@ -880,11 +880,11 @@ export const AdminSettingsSection: React.FC<AdminSettingsSectionProps> = ({
             <label className="block text-xs font-bold text-[#3E2E22]">Vista Previa de la Tarjeta</label>
             <div className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-[#5D4636] bg-[#3E2E22] group">
               <img
-                src={formState.heroImageUrl || '/src/assets/images/rosquetes_hero_1786559273650.jpg'}
+                src={formState.heroImageUrl || '/images/rosquetes_hero_1786559273650.jpg'}
                 alt="Vista previa hero"
                 className="w-full h-56 object-cover"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/src/assets/images/rosquetes_hero_1786559273650.jpg';
+                  (e.target as HTMLImageElement).src = '/images/rosquetes_hero_1786559273650.jpg';
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#3E2E22]/90 via-transparent to-transparent flex flex-col justify-end p-4">
@@ -927,10 +927,10 @@ export const AdminSettingsSection: React.FC<AdminSettingsSectionProps> = ({
                     className="hidden"
                   />
                 </label>
-                {formState.heroImageUrl && formState.heroImageUrl !== '/src/assets/images/rosquetes_hero_1786559273650.jpg' && (
+                {formState.heroImageUrl && formState.heroImageUrl !== '/images/rosquetes_hero_1786559273650.jpg' && (
                   <button
                     type="button"
-                    onClick={() => setFormState(prev => ({ ...prev, heroImageUrl: '/src/assets/images/rosquetes_hero_1786559273650.jpg' }))}
+                    onClick={() => setFormState(prev => ({ ...prev, heroImageUrl: '/images/rosquetes_hero_1786559273650.jpg' }))}
                     className="text-xs text-rose-600 hover:text-rose-800 font-semibold underline cursor-pointer"
                   >
                     Restaurar imagen original
