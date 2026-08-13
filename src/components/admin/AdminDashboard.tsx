@@ -78,36 +78,38 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="min-h-screen bg-[#FDFBF7] flex flex-col">
       {/* Top Admin Header */}
-      <div className="bg-[#3E2E22] text-[#FDFBF7] border-b border-[#5D4636] px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-md">
-        <div className="flex items-center gap-3">
+      <div className="bg-[#3E2E22] text-[#FDFBF7] border-b border-[#5D4636] px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-md">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={onBackToStore}
             className="flex items-center gap-1.5 bg-[#4A3728] hover:bg-[#5D4636] text-[#FEF3C7] px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" /> Volver a la Tienda
           </button>
-          <div className="h-5 w-px bg-[#5D4636]" />
+          <div className="hidden sm:block h-5 w-px bg-[#5D4636]" />
           <h2 className="font-serif font-bold text-lg text-[#FDFBF7] flex items-center gap-2">
             Panel Super Admin <ShieldCheck className="w-4 h-4 text-amber-400" />
           </h2>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0 justify-end">
           {/* Quick AI Toggle Control in Header */}
-          <button
-            type="button"
-            onClick={() => onSaveSettings({ ...settings, enableAIReports: !(settings.enableAIReports !== false) })}
-            id="header-toggle-ai-btn"
-            title="Activar o Desactivar la función de Informes con Inteligencia Artificial"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer shadow-sm active:scale-95 border ${
-              settings.enableAIReports !== false
-                ? 'bg-amber-500/20 text-amber-200 border-amber-500/50 hover:bg-amber-500/30'
-                : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700'
-            }`}
-          >
-            <Cpu className="w-4 h-4 text-amber-400" />
-            <span className="hidden sm:inline">{settings.enableAIReports !== false ? 'IA: Activa' : 'IA: Inactiva'}</span>
-          </button>
+          {false && (
+            <button
+              type="button"
+              onClick={() => onSaveSettings({ ...settings, enableAIReports: !(settings.enableAIReports !== false) })}
+              id="header-toggle-ai-btn"
+              title="Activar o Desactivar la función de Informes con Inteligencia Artificial"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer shadow-sm active:scale-95 border ${
+                settings.enableAIReports !== false
+                  ? 'bg-amber-500/20 text-amber-200 border-amber-500/50 hover:bg-amber-500/30'
+                  : 'bg-gray-800 text-gray-400 border-gray-700 hover:bg-gray-700'
+              }`}
+            >
+              <Cpu className="w-4 h-4 text-amber-400" />
+              <span className="hidden sm:inline">{settings.enableAIReports !== false ? 'IA: Activa' : 'IA: Inactiva'}</span>
+            </button>
+          )}
 
           {/* Quick Export Actions in Header */}
           <button
