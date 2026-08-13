@@ -85,8 +85,11 @@ async function createOrder(rawBody: string | null) {
     const { data, error } = await supabase.from('orders').insert(newOrder).select().single();
     if (error) throw error;
 
-    // Upsert customer (fire-and-forget, non-critical)
-    upsertCustomer(supabase, newOrder).catch(console.warn);
+    // Await the customer upsert so the serverless function doesn't kill it prematurely
+    const customer = await upsertCustomer(supabase, newOrder).catch(err => {
+      console.warn('[orders] Failed to upsert customer', err);
+      return null;
+    });
 
     // Map snake_case to camelCase so the frontend doesn't crash (White Screen of Death)
     const mappedOrder = {
@@ -112,7 +115,20 @@ async function createOrder(rawBody: string | null) {
       createdAt: data.created_at,
     };
 
-    return jsonResponse(200, { success: true, order: mappedOrder });
+    const mappedCustomer = customer ? {
+      id: customer.id,
+      name: customer.name,
+      phone: customer.phone,
+      email: customer.email,
+      city: customer.city,
+      address: customer.address,
+      totalOrders: customer.total_orders,
+      totalSpentUSD: customer.total_spent_usd,
+      createdAt: customer.created_at,
+      notes: customer.notes,
+    } : null;
+
+    return jsonResponse(200, { success: true, order: mappedOrder, customer: mappedCustomer });
   } catch (err: any) {
     console.error('[orders] Create error:', err.message);
     return jsonResponse(500, { error: 'Error al registrar la orden' });
@@ -166,17 +182,18 @@ async function deleteOrder(id: string) {
 async function upsertCustomer(supabase: any, order: any) {
   const { data: existing } = await supabase
     .from('customers')
-    .select('id, total_orders, total_spent_usd')
+    .select('*')
     .eq('phone', order.customer_phone)
     .single();
 
   if (existing) {
-    await supabase.from('customers').update({
+    const { data: updatedCustomer } = await supabase.from('customers').update({
       total_orders: (existing.total_orders || 0) + 1,
       total_spent_usd: parseFloat(((existing.total_spent_usd || 0) + order.total_usd).toFixed(2)),
-    }).eq('id', existing.id);
+    }).eq('id', existing.id).select().single();
+    return updatedCustomer;
   } else {
-    await supabase.from('customers').insert({
+    const { data: newCustomer } = await supabase.from('customers').insert({
       id: `cli-${Date.now()}`,
       name: order.customer_name,
       phone: order.customer_phone,
@@ -185,6 +202,7 @@ async function upsertCustomer(supabase: any, order: any) {
       address: order.address_detail,
       total_orders: 1,
       total_spent_usd: order.total_usd,
-    });
+    }).select().single();
+    return newCustomer;
   }
 }

@@ -412,9 +412,20 @@ export default function App() {
         onRemoveItem={handleRemoveCartItem}
         onClearCart={handleClearCart}
         settings={settings}
-        onOrderSubmitted={newOrder => {
+        onOrderSubmitted={(newOrder, updatedCustomer) => {
           setConfirmedOrder(newOrder);
           setOrders(prev => [newOrder, ...prev]);
+          if (updatedCustomer) {
+            setClients(prev => {
+              const idx = prev.findIndex(c => c.id === updatedCustomer.id);
+              if (idx >= 0) {
+                const newClients = [...prev];
+                newClients[idx] = updatedCustomer;
+                return newClients;
+              }
+              return [updatedCustomer, ...prev];
+            });
+          }
         }}
       />
 

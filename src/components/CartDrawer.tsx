@@ -33,7 +33,7 @@ interface CartDrawerProps {
   onRemoveItem: (productId: string) => void;
   onClearCart: () => void;
   settings: AdminSettings;
-  onOrderSubmitted: (orderData: any) => void;
+  onOrderSubmitted: (orderData: any, customerData?: any) => void;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -213,6 +213,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
       const data = await response.json();
       const savedOrder = data.order;
+      const savedCustomer = data.customer;
 
       // Handle WhatsApp redirection if channel is whatsapp or mode is whatsapp/both
       const shouldLaunchWA = actualChannel === 'whatsapp' || settings.dispatchMode === 'whatsapp' || (settings.dispatchMode === 'both' && preferredChannel !== 'email');
@@ -245,7 +246,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         window.open(waUrl, '_blank');
       }
 
-      onOrderSubmitted(savedOrder);
+      onOrderSubmitted(savedOrder, savedCustomer);
       onClearCart();
       onClose();
     } catch (err: any) {
