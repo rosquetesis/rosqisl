@@ -1,0 +1,436 @@
+import { AdminSettings, Customer, DeliveryZone, Ingredient, MonthlySalesData, Order, Product, ProductionBatch, ProductRecipe } from '../types';
+
+export const initialSettings: AdminSettings = {
+  dispatchMode: 'whatsapp',
+  whatsappNumber: '584125558822',
+  emailRecipient: 'pedidos.rosquetes.aragua@gmail.com',
+  whatsappMessageTemplate: `✨ *NUEVO PEDIDO DE ROSQUETES CANARIOS* ✨
+📋 *Pedido ID:* {ORDER_NUMBER}
+👤 *Cliente:* {CUSTOMER_NAME}
+📱 *Teléfono:* {CUSTOMER_PHONE}
+📍 *Zona de Entrega:* {DELIVERY_ZONE} ({DELIVERY_CITY})
+🏠 *Dirección:* {ADDRESS}
+
+🛒 *PRODUCTOS:*
+{ORDER_ITEMS}
+
+💰 *RESUMEN DE PAGO:*
+- Subtotal: ${'{SUBTOTAL_USD}'} USD
+- Delivery: ${'{DELIVERY_FEE_USD}'} USD
+*TOTAL A PAGAR: ${'{TOTAL_USD}'} USD* (Bs. {TOTAL_VES} VES @ Tasa {EXCHANGE_RATE})
+
+💳 *Método de Pago:* {PAYMENT_METHOD}
+🔑 *Ref. Pago:* {PAYMENT_REF}
+
+¡Muchas gracias por preferir la tradición artesanal de Aragua! 🍩`,
+  exchangeRateVES: 36.50,
+  autoSyncBCVRate: true,
+  lastBCVSyncDate: new Date().toISOString(),
+  storeName: 'Rosquetes Canarios',
+  storeTagline: 'Tradición Artesanal Canario-Aragüeña en Maracay y todo Aragua',
+  storeBadge: 'Don Rosquetico',
+  storeLogoType: 'image',
+  storeLogoValue: '/src/assets/images/rosqueticos_logo_brand_1786561715713.jpg',
+  storeAddress: 'Calle San Miguel, Local #4, Sector Base Aragua, Maracay, Edo. Aragua',
+  pagoMovilBank: '0108 - Banco Provincial',
+  pagoMovilRif: 'J-501234567',
+  pagoMovilPhone: '0412-5558822',
+  pagoMovilOwner: 'Rosquetes Canarios C.A.',
+  zelleEmail: 'pagos.rosquetes@gmail.com',
+  zelleOwner: 'Rosquetes Canarios Aragua',
+  adminUsername: 'admin',
+  adminPassword: 'admin2026',
+  heroImageUrl: '/src/assets/images/rosquetes_hero_1786559273650.jpg',
+  heroBadgeText: 'Presentación Estrella',
+  heroStarTitle: 'Docena Tradicional Glaseada',
+  heroStarPriceUSD: 4.50,
+  isAutoFallbackEnabled: true,
+  onlinePaymentsEnabled: true,
+  autoVerifyOnlinePayments: true,
+  paymentMethods: [
+    {
+      id: 'pago_movil',
+      name: 'Pago Móvil (Bolívares)',
+      iconName: 'smartphone',
+      currency: 'VES',
+      enabled: true,
+      badgeText: 'Popular • Verificación Inmediata',
+      description: 'Paga directo en bolívares desde tu app bancaria con confirmación rápida online.',
+      bankOrPlatformName: '0108 - Banco Provincial',
+      accountHolder: 'Rosquetes Canarios C.A.',
+      accountNumberOrRif: 'J-501234567',
+      phoneNumber: '0412-5558822',
+      instructions: '1. Realiza el Pago Móvil en tu banco con RIF J-501234567 y teléfono 0412-5558822.\n2. Inserte el N° de referencia generado para confirmar su pedido.',
+      requiresReference: true,
+      supportsOnlineVerification: true,
+    },
+    {
+      id: 'zelle',
+      name: 'Zelle / Transferencia USD',
+      iconName: 'zap',
+      currency: 'USD',
+      enabled: true,
+      badgeText: 'Sin Comisiones USD',
+      description: 'Transferencia directa Zelle desde cualquier banco estadounidense.',
+      emailOrPayId: 'pagos.rosquetes@gmail.com',
+      accountHolder: 'Rosquetes Canarios Aragua',
+      instructions: '1. Ingresa a Zelle en tu banco y envía el monto en USD a pagos.rosquetes@gmail.com.\n2. Ingresa el nombre del titular y la referencia de la transacción.',
+      requiresReference: true,
+      supportsOnlineVerification: true,
+    },
+    {
+      id: 'binance',
+      name: 'Binance Pay / Crypto (USDT)',
+      iconName: 'qr-code',
+      currency: 'USD',
+      enabled: true,
+      badgeText: 'Instantáneo • Cero Comisión',
+      description: 'Paga de inmediato escaneando el QR o usando Binance Pay ID.',
+      emailOrPayId: '289410398',
+      accountHolder: 'RosquetesCanariosVE',
+      instructions: '1. En tu app de Binance entra en Pay -> Enviar -> Binance Pay ID: 289410398.\n2. Envía el monto exacto en USDT e ingresa el ID de transacción.',
+      requiresReference: true,
+      supportsOnlineVerification: true,
+    },
+    {
+      id: 'tarjeta_pasarela',
+      name: 'Tarjeta de Débito / Crédito (Pasarela Online)',
+      iconName: 'credit-card',
+      currency: 'AMBOS',
+      enabled: true,
+      badgeText: 'Procesamiento Automático 24/7',
+      description: 'Paga de forma 100% en línea y encriptada con tu tarjeta bancaria nacional o internacional.',
+      bankOrPlatformName: 'Pasarela de Pago Directa C2P / BNC / Visa / Mastercard',
+      instructions: 'Ingresa los datos de tu tarjeta de débito/crédito en el formulario seguro en línea.',
+      requiresReference: false,
+      supportsOnlineVerification: true,
+    },
+    {
+      id: 'zinli',
+      name: 'Zinli Wallet Digital',
+      iconName: 'wallet',
+      currency: 'USD',
+      enabled: true,
+      badgeText: 'Dólares Digitales',
+      description: 'Transferencia en dólares entre cuentas de Zinli.',
+      emailOrPayId: 'zinli.rosquetes@gmail.com',
+      accountHolder: 'Rosquetes Canarios',
+      instructions: 'Envía el pago desde tu app Zinli al correo zinli.rosquetes@gmail.com y coloca la referencia.',
+      requiresReference: true,
+      supportsOnlineVerification: true,
+    },
+    {
+      id: 'efectivo_usd',
+      name: 'Efectivo Divisas (USD)',
+      iconName: 'dollar-sign',
+      currency: 'USD',
+      enabled: true,
+      badgeText: 'Pago Contra Entrega',
+      description: 'Entrega en efectivo billetes físicos al repartidor en Aragua.',
+      instructions: 'Por favor ten los billetes exactos o indica si requerirás vuelto al momento de recibir.',
+      requiresReference: false,
+      supportsOnlineVerification: false,
+    },
+    {
+      id: 'efectivo_ves',
+      name: 'Efectivo Bolívares (VES)',
+      iconName: 'building',
+      currency: 'VES',
+      enabled: true,
+      badgeText: 'Pago al Entregar',
+      description: 'Paga en billetes bolívares al momento de recibir el pedido.',
+      instructions: 'Monto exacto calculado a la tasa oficial del día.',
+      requiresReference: false,
+      supportsOnlineVerification: false,
+    },
+  ],
+  deliveryZones: [
+    { id: 'zone-1', name: 'Maracay Centro / Base Aragua / Las Delicias', city: 'Maracay', feeUSD: 1.50, estimatedTime: '30 - 45 min' },
+    { id: 'zone-2', name: 'Caña de Azúcar / El Limón / Calicanto', city: 'El Limón / Maracay', feeUSD: 2.00, estimatedTime: '45 - 60 min' },
+    { id: 'zone-3', name: 'Turmero Centro / San Mateo', city: 'Turmero', feeUSD: 2.50, estimatedTime: '45 - 60 min' },
+    { id: 'zone-4', name: 'Cagua Centro / Santa Cruz de Aragua', city: 'Cagua', feeUSD: 3.00, estimatedTime: '60 - 90 min' },
+    { id: 'zone-5', name: 'La Victoria / Palo Negro', city: 'La Victoria', feeUSD: 3.50, estimatedTime: '60 - 90 min' },
+    { id: 'zone-6', name: 'Retiro Directo en Taller (Base Aragua)', city: 'Maracay', feeUSD: 0.00, estimatedTime: 'Inmediato' },
+  ],
+  featureCards: [
+    {
+      id: 'card-1',
+      icon: '🍋',
+      title: 'Ingredientes Naturales',
+      description: 'Infusión artesanal de anís dulce, ralladura de limones frescos criollos de Aragua y miel pura. Sin conservantes artificiales.',
+    },
+    {
+      id: 'card-2',
+      icon: '🔥',
+      title: 'Horneado Diario en Maracay',
+      description: 'Nuestros maestros pasteleros hornean diariamente en lotes reducidos para garantizar la textura crocante y el baño de glaseado perfecto.',
+    },
+    {
+      id: 'card-3',
+      icon: '🚚',
+      title: 'Despacho Directo & Pago Fácil',
+      description: 'Entregas rápidas en Maracay, Turmero, Cagua, El Limón y La Victoria. Paga cómodamente con Pago Móvil, Zelle o Efectivo.',
+    },
+  ],
+};
+
+export const initialProducts: Product[] = [
+  {
+    id: 'prod-1',
+    name: 'Docena Tradicional Glaseada Isleña',
+    description: '12 Rosquetes artesanos canario-italianos con infusión natural de anís dulce, rayadura de limón criollo de Aragua y baño de glaseado crujiente.',
+    priceUSD: 4.50,
+    unitType: 'Docena (12 u.)',
+    image: '/src/assets/images/rosquetes_glaseados_islenos_1786561725949.jpg',
+    stockElaborado: 35,
+    category: 'tradicional',
+    featured: true,
+    isPublished: true,
+  },
+  {
+    id: 'prod-2',
+    name: 'Bolsa de Mini Rosqueticos Isleños (250g)',
+    description: 'Aproximadamente 25 minitronquitos crocantes glaseados estilo isleño. El snack perfecto para acompañar el café o chocolate en la tarde.',
+    priceUSD: 3.00,
+    unitType: 'Bolsa 250g',
+    image: '/src/assets/images/rosqueticos_mini_bolsa_1786561744404.jpg',
+    stockElaborado: 50,
+    category: 'mini',
+    featured: true,
+    isPublished: true,
+  },
+  {
+    id: 'prod-3',
+    name: 'Caja Regalo Familiar Isleña (24 u.)',
+    description: 'Caja decorada artesanal con 24 rosquetes variados (12 glaseados tradicionales + 12 especias de naranja y anís matalahúva).',
+    priceUSD: 8.50,
+    unitType: 'Caja 24 u.',
+    image: '/src/assets/images/rosquetes_caja_regalo_1786561754538.jpg',
+    stockElaborado: 18,
+    category: 'regalo',
+    featured: true,
+    isPublished: true,
+  },
+  {
+    id: 'prod-4',
+    name: 'Rosquetes Cítricos de Limón & Anís',
+    description: '6 Rosquetes grandes aromatizados con zumo y ralladura de limón verde fresco y semillas puras de matalahúva / anís.',
+    priceUSD: 2.80,
+    unitType: 'Media Docena (6 u.)',
+    image: '/src/assets/images/rosquetes_limon_anis_islenos_1786561735636.jpg',
+    stockElaborado: 24,
+    category: 'especial',
+    featured: false,
+    isPublished: true,
+  },
+  {
+    id: 'prod-5',
+    name: 'Rosquetes Integrales / Cero Azúcar Refinada',
+    description: 'Elaborados con harina de trigo integral, miel pura de abejas de Aragua y toque sutil de canela.',
+    priceUSD: 5.00,
+    unitType: 'Docena (12 u.)',
+    image: 'https://images.unsplash.com/photo-1517433670267-08bbd4be890f?q=80&w=800&auto=format&fit=crop',
+    stockElaborado: 12,
+    category: 'especial',
+    featured: false,
+    isPublished: true,
+  },
+];
+
+export const initialIngredients: Ingredient[] = [
+  { id: 'ing-1', name: 'Harina de Trigo Leudante', category: 'harina', stockAmount: 25.0, unit: 'kg', minAlertThreshold: 8.0, costPerUnitUSD: 1.20, lastRestocked: '2026-08-01' },
+  { id: 'ing-2', name: 'Azúcar Blanca Refinada', category: 'azucar', stockAmount: 18.5, unit: 'kg', minAlertThreshold: 5.0, costPerUnitUSD: 1.10, lastRestocked: '2026-08-02' },
+  { id: 'ing-3', name: 'Anís Dulce en Grano', category: 'especias', stockAmount: 2.4, unit: 'kg', minAlertThreshold: 1.0, costPerUnitUSD: 6.50, lastRestocked: '2026-07-28' },
+  { id: 'ing-4', name: 'Limones Criollos Frescos', category: 'liquidos', stockAmount: 6.0, unit: 'kg', minAlertThreshold: 2.0, costPerUnitUSD: 0.90, lastRestocked: '2026-08-10' },
+  { id: 'ing-5', name: 'Huevos Frescos', category: 'liquidos', stockAmount: 180, unit: 'unidades', minAlertThreshold: 60, costPerUnitUSD: 0.12, lastRestocked: '2026-08-09' },
+  { id: 'ing-6', name: 'Aceite Vegetal / Mantequilla', category: 'liquidos', stockAmount: 12.0, unit: 'litros', minAlertThreshold: 3.0, costPerUnitUSD: 2.30, lastRestocked: '2026-08-05' },
+  { id: 'ing-7', name: 'Ron Añejo Venezolano', category: 'liquidos', stockAmount: 1.5, unit: 'litros', minAlertThreshold: 0.5, costPerUnitUSD: 8.00, lastRestocked: '2026-07-20' },
+  { id: 'ing-8', name: 'Bolsas y Cajas de Empaque con Cinta', category: 'empaque', stockAmount: 120, unit: 'unidades', minAlertThreshold: 30, costPerUnitUSD: 0.25, lastRestocked: '2026-08-03' },
+];
+
+export const initialRecipes: ProductRecipe[] = [
+  {
+    productId: 'prod-1', // Docena Tradicional
+    requirements: [
+      { ingredientId: 'ing-1', amountPerUnit: 0.35 }, // 350g harina
+      { ingredientId: 'ing-2', amountPerUnit: 0.20 }, // 200g azucar
+      { ingredientId: 'ing-3', amountPerUnit: 0.02 }, // 20g anis
+      { ingredientId: 'ing-4', amountPerUnit: 0.05 }, // 50g limon
+      { ingredientId: 'ing-5', amountPerUnit: 2.0 },  // 2 huevos
+      { ingredientId: 'ing-6', amountPerUnit: 0.08 }, // 80ml aceite
+      { ingredientId: 'ing-8', amountPerUnit: 1.0 },  // 1 empaque
+    ],
+  },
+  {
+    productId: 'prod-2', // Bolsa Mini
+    requirements: [
+      { ingredientId: 'ing-1', amountPerUnit: 0.20 },
+      { ingredientId: 'ing-2', amountPerUnit: 0.12 },
+      { ingredientId: 'ing-3', amountPerUnit: 0.015 },
+      { ingredientId: 'ing-4', amountPerUnit: 0.03 },
+      { ingredientId: 'ing-5', amountPerUnit: 1.0 },
+      { ingredientId: 'ing-6', amountPerUnit: 0.05 },
+      { ingredientId: 'ing-8', amountPerUnit: 1.0 },
+    ],
+  },
+];
+
+export const initialClients: Customer[] = [
+  {
+    id: 'cli-1',
+    name: 'María Alejandra Rodríguez',
+    phone: '0412-4411223',
+    email: 'marodriguez@gmail.com',
+    city: 'Maracay',
+    address: 'Urb. Base Aragua, Res. La Floresta, Apto 4B',
+    favoriteProduct: 'Docena Tradicional Glaseada',
+    totalOrders: 6,
+    totalSpentUSD: 36.50,
+    createdAt: '2026-05-10',
+    notes: 'Cliente frecuente. Prefiere entrega en las tardes.',
+  },
+  {
+    id: 'cli-2',
+    name: 'Carlos Eduardo Mendoza',
+    phone: '0414-3891011',
+    email: 'cmendoza.turmero@hotmail.com',
+    city: 'Turmero',
+    address: 'Sector Guayabita, Calle Principal #12',
+    favoriteProduct: 'Caja Regalo Familiar (24 u.)',
+    totalOrders: 4,
+    totalSpentUSD: 34.00,
+    createdAt: '2026-06-01',
+    notes: 'Paga siempre por Pago Móvil Banco Provincial.',
+  },
+  {
+    id: 'cli-3',
+    name: 'Panadería y Dulcería El Limón',
+    phone: '0424-3329988',
+    email: 'contacto@ellimonbakery.com',
+    city: 'El Limón',
+    address: 'Av. Universidad frente a la Micolab',
+    favoriteProduct: 'Bolsa de Mini Rosqueticos (250g)',
+    totalOrders: 12,
+    totalSpentUSD: 144.00,
+    createdAt: '2026-03-15',
+    notes: 'Cliente corporativo de reventa semanal.',
+  },
+  {
+    id: 'cli-4',
+    name: 'Valeria Gómez',
+    phone: '0412-8877665',
+    city: 'Cagua',
+    address: 'Urb. Corinsa, Calle Los Mangos Qta 45',
+    favoriteProduct: 'Rosquetes Cítricos de Naranja & Anís',
+    totalOrders: 2,
+    totalSpentUSD: 12.00,
+    createdAt: '2026-07-20',
+  },
+];
+
+export const initialOrders: Order[] = [
+  {
+    id: 'ord-101',
+    orderNumber: 'ROS-2026-101',
+    createdAt: '2026-08-11T14:30:00Z',
+    customerName: 'María Alejandra Rodríguez',
+    customerPhone: '0412-4411223',
+    customerEmail: 'marodriguez@gmail.com',
+    deliveryZone: 'Maracay Centro / Base Aragua / Las Delicias',
+    deliveryCity: 'Maracay',
+    addressDetail: 'Urb. Base Aragua, Res. La Floresta, Apto 4B',
+    deliveryFeeUSD: 1.50,
+    items: [
+      { productId: 'prod-1', productName: 'Docena Tradicional Glaseada', unitType: 'Docena (12 u.)', quantity: 2, unitPriceUSD: 4.50, subtotalUSD: 9.00 },
+      { productId: 'prod-2', productName: 'Bolsa de Mini Rosqueticos (250g)', unitType: 'Bolsa 250g', quantity: 1, unitPriceUSD: 3.00, subtotalUSD: 3.00 },
+    ],
+    totalUSD: 13.50,
+    exchangeRateVES: 36.50,
+    totalVES: 492.75,
+    paymentMethod: 'pago_movil',
+    paymentReference: '784920',
+    paymentVerified: true,
+    status: 'listo',
+    dispatchMethodUsed: 'whatsapp',
+    notes: 'Entregar antes de las 5pm',
+  },
+  {
+    id: 'ord-102',
+    orderNumber: 'ROS-2026-102',
+    createdAt: '2026-08-12T09:15:00Z',
+    customerName: 'Carlos Eduardo Mendoza',
+    customerPhone: '0414-3891011',
+    customerEmail: 'cmendoza.turmero@hotmail.com',
+    deliveryZone: 'Turmero Centro / San Mateo',
+    deliveryCity: 'Turmero',
+    addressDetail: 'Sector Guayabita, Calle Principal #12',
+    deliveryFeeUSD: 2.50,
+    items: [
+      { productId: 'prod-3', productName: 'Caja Regalo Familiar (24 u.)', unitType: 'Caja 24 u.', quantity: 1, unitPriceUSD: 8.50, subtotalUSD: 8.50 },
+    ],
+    totalUSD: 11.00,
+    exchangeRateVES: 36.50,
+    totalVES: 401.50,
+    paymentMethod: 'pago_movil',
+    paymentReference: '109283',
+    paymentVerified: true,
+    status: 'en_preparacion',
+    dispatchMethodUsed: 'whatsapp',
+  },
+  {
+    id: 'ord-103',
+    orderNumber: 'ROS-2026-103',
+    createdAt: '2026-08-12T10:45:00Z',
+    customerName: 'Panadería y Dulcería El Limón',
+    customerPhone: '0424-3329988',
+    customerEmail: 'contacto@ellimonbakery.com',
+    deliveryZone: 'Caña de Azúcar / El Limón / Calicanto',
+    deliveryCity: 'El Limón',
+    addressDetail: 'Av. Universidad frente a la Micolab',
+    deliveryFeeUSD: 2.00,
+    items: [
+      { productId: 'prod-2', productName: 'Bolsa de Mini Rosqueticos (250g)', unitType: 'Bolsa 250g', quantity: 10, unitPriceUSD: 3.00, subtotalUSD: 30.00 },
+    ],
+    totalUSD: 32.00,
+    exchangeRateVES: 36.50,
+    totalVES: 1168.00,
+    paymentMethod: 'pago_movil',
+    paymentReference: '556102',
+    paymentVerified: false,
+    status: 'pendiente',
+    dispatchMethodUsed: 'email',
+    notes: 'Pedido semanal de reventa.',
+  },
+];
+
+export const initialBatches: ProductionBatch[] = [
+  {
+    id: 'bat-1',
+    batchNumber: 'LOTE-20260810-01',
+    date: '2026-08-10',
+    productId: 'prod-1',
+    productName: 'Docena Tradicional Glaseada',
+    unitsProduced: 30,
+    costTotalUSD: 25.50,
+    notes: 'Hornada matutina. Glaseado perfecto con anís de primera calidad.',
+  },
+  {
+    id: 'bat-2',
+    batchNumber: 'LOTE-20260811-01',
+    date: '2026-08-11',
+    productId: 'prod-2',
+    productName: 'Bolsa de Mini Rosqueticos (250g)',
+    unitsProduced: 40,
+    costTotalUSD: 22.00,
+    notes: 'Empacados en fundas kraft con sello hermético.',
+  },
+];
+
+export const initialSalesReports: MonthlySalesData[] = [
+  { month: 'Marzo', year: 2026, totalRevenueUSD: 680, totalRevenueVES: 24820, totalOrdersCount: 42, docenasSold: 110, topSellingProduct: 'Docena Tradicional Glaseada', topZone: 'Maracay' },
+  { month: 'Abril', year: 2026, totalRevenueUSD: 820, totalRevenueVES: 29930, totalOrdersCount: 55, docenasSold: 145, topSellingProduct: 'Docena Tradicional Glaseada', topZone: 'Maracay' },
+  { month: 'Mayo', year: 2026, totalRevenueUSD: 950, totalRevenueVES: 34675, totalOrdersCount: 68, docenasSold: 170, topSellingProduct: 'Caja Regalo Familiar (24 u.)', topZone: 'Turmero' },
+  { month: 'Junio', year: 2026, totalRevenueUSD: 1120, totalRevenueVES: 40880, totalOrdersCount: 79, docenasSold: 210, topSellingProduct: 'Bolsa de Mini Rosqueticos (250g)', topZone: 'Maracay' },
+  { month: 'Julio', year: 2026, totalRevenueUSD: 1290, totalRevenueVES: 47085, totalOrdersCount: 92, docenasSold: 240, topSellingProduct: 'Docena Tradicional Glaseada', topZone: 'El Limón' },
+  { month: 'Agosto (Parcial)', year: 2026, totalRevenueUSD: 540, totalRevenueVES: 19710, totalOrdersCount: 38, docenasSold: 98, topSellingProduct: 'Docena Tradicional Glaseada', topZone: 'Maracay' },
+];

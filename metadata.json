@@ -1,0 +1,6 @@
+{
+  "name": "Rosquetes Canarios - Pedidos & Gestión Aragua",
+  "description": "Sistema de pedidos y gestión de producción artesanal de rosquetes canarios para Aragua, Venezuela. Control de inventario, ingredientes, clientes, reportes de ventas y despacho por WhatsApp/Correo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

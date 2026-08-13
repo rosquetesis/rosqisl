@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-natural-bg: #FDFBF7;
+  --color-natural-card: #FFFFFF;
+  --color-natural-surface: #F4EFEA;
+  --color-natural-wood-dark: #3E2E22;
+  --color-natural-wood: #4A3728;
+  --color-natural-wood-medium: #5D4636;
+  --color-natural-wood-light: #78604E;
+  --color-natural-wood-muted: #8C735D;
+  --color-natural-amber: #D97706;
+  --color-natural-amber-hover: #B45309;
+  --color-natural-amber-light: #FEF3C7;
+  --color-natural-border: #E5DED4;
+  --color-natural-border-light: #EFECE6;
+}
+
+body {
+  background-color: #FDFBF7;
+  color: #4A3728;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
