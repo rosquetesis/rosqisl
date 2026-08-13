@@ -60,15 +60,11 @@ export const AdminSalesReportsSection: React.FC<AdminSalesReportsSectionProps> =
       <div className="bg-[#3E2E22] p-6 rounded-3xl border border-[#5D4636] shadow-xl text-[#FDFBF7] relative overflow-hidden">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 bg-[#5D4636] border border-[#78604E] px-3 py-1 rounded-full text-xs font-bold text-[#FEF3C7]">
-              <Sparkles className="w-4 h-4 text-[#D97706]" />
-              Asistente Inteligente de Producción Artesanal (Gemini AI)
-            </span>
             <h3 className="font-serif text-2xl font-bold text-[#FDFBF7]">
-              Optimización de Hornada & Control de Insumos
+              Informes Administrativos
             </h3>
             <p className="text-xs text-[#EFECE6] max-w-2xl leading-relaxed">
-              Analiza las tendencias de ventas en Aragua, calcula la materia prima requerida y genera recomendaciones automáticas para maximizar la rentabilidad y evitar el desperdicio.
+              Genera y descarga reportes detallados del rendimiento de ventas, clientes e inventario actual en formato PDF o Excel.
             </p>
           </div>
 
@@ -89,14 +85,16 @@ export const AdminSalesReportsSection: React.FC<AdminSalesReportsSectionProps> =
               <span>Informe PDF</span>
             </button>
 
-            <button
-              onClick={fetchAiProductionAdvice}
-              disabled={isLoadingAi}
-              className="flex items-center gap-2 bg-[#D97706] hover:bg-[#B45309] text-white font-extrabold px-5 py-3 rounded-2xl text-xs shadow-xl transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-            >
-              <Cpu className="w-4 h-4 text-white" />
-              <span>{isLoadingAi ? 'Analizando...' : 'Informe IA'}</span>
-            </button>
+            {false && (
+              <button
+                onClick={fetchAiProductionAdvice}
+                disabled={isLoadingAi}
+                className="flex items-center gap-2 bg-[#D97706] hover:bg-[#B45309] text-white font-extrabold px-5 py-3 rounded-2xl text-xs shadow-xl transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+              >
+                <Cpu className="w-4 h-4 text-white" />
+                <span>{isLoadingAi ? 'Analizando...' : 'Informe IA'}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
