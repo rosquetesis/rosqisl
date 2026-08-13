@@ -92,49 +92,59 @@ export default function App() {
 
   // Super Admin Action Handlers
   const handleSaveSettings = async (updatedSettings: AdminSettings) => {
-    setSettings(updatedSettings);
     try {
-      await fetch('/api/settings', {
+      const res = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedSettings),
       });
-    } catch (err) {
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error ${res.status}`);
+      }
+      setSettings(updatedSettings);
+    } catch (err: any) {
       console.error('Failed syncing settings', err);
+      alert('Error guardando la configuración: ' + err.message);
+      throw err;
     }
   };
 
   const handleUpdateOrderStatus = async (orderId: string, status: OrderStatus, paymentVerified?: boolean) => {
-    setOrders(prev =>
-      prev.map(o => {
-        if (o.id === orderId) {
-          return {
-            ...o,
-            status,
-            paymentVerified: paymentVerified !== undefined ? paymentVerified : o.paymentVerified,
-          };
-        }
-        return o;
-      })
-    );
-
     try {
-      await fetch(`/api/orders/${orderId}`, {
+      const res = await fetch(`/api/orders/${orderId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, paymentVerified }),
       });
-    } catch (err) {
+      if (!res.ok) throw new Error('Error al actualizar el estado del pedido');
+      
+      setOrders(prev =>
+        prev.map(o => {
+          if (o.id === orderId) {
+            return {
+              ...o,
+              status,
+              paymentVerified: paymentVerified !== undefined ? paymentVerified : o.paymentVerified,
+            };
+          }
+          return o;
+        })
+      );
+    } catch (err: any) {
       console.error('Failed updating order', err);
+      alert(err.message);
     }
   };
 
   const handleDeleteOrder = async (orderId: string) => {
-    setOrders(prev => prev.filter(o => o.id !== orderId));
     try {
-      await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
-    } catch (err) {
+      const res = await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Error al eliminar el pedido');
+      setOrders(prev => prev.filter(o => o.id !== orderId));
+    } catch (err: any) {
       console.error('Failed deleting order', err);
+      alert(err.message);
     }
   };
 
@@ -145,76 +155,85 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId, unitsProduced, notes }),
       });
-      if (res.ok) {
-        await fetchState();
-      }
-    } catch (err) {
+      if (!res.ok) throw new Error('Error al registrar lote');
+      await fetchState();
+    } catch (err: any) {
       console.error('Error registering batch', err);
+      alert(err.message);
     }
   };
 
   const handleUpdateProductStock = async (productId: string, newStock: number) => {
-    setProducts(prev =>
-      prev.map(p => p.id === productId ? { ...p, stockElaborado: newStock } : p)
-    );
     const prod = products.find(p => p.id === productId);
-    if (prod) {
-      try {
-        await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...prod, stockElaborado: newStock }),
-        });
-      } catch (err) {
-        console.error('Error updating product stock', err);
-      }
+    if (!prod) return;
+    
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...prod, stockElaborado: newStock }),
+      });
+      if (!res.ok) throw new Error('Error al actualizar stock');
+      
+      setProducts(prev =>
+        prev.map(p => p.id === productId ? { ...p, stockElaborado: newStock } : p)
+      );
+    } catch (err: any) {
+      console.error('Error updating product stock', err);
+      alert(err.message);
     }
   };
 
   const handleSaveProduct = async (product: Product) => {
-    setProducts(prev => {
-      const idx = prev.findIndex(p => p.id === product.id);
-      if (idx >= 0) {
-        const updated = [...prev];
-        updated[idx] = product;
-        return updated;
-      }
-      return [...prev, product];
-    });
-
     try {
-      await fetch('/api/products', {
+      const res = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(product),
       });
-    } catch (err) {
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Error al guardar el producto');
+      }
+
+      setProducts(prev => {
+        const idx = prev.findIndex(p => p.id === product.id);
+        if (idx >= 0) {
+          const updated = [...prev];
+          updated[idx] = product;
+          return updated;
+        }
+        return [...prev, product];
+      });
+    } catch (err: any) {
       console.error('Error saving product', err);
+      alert(err.message);
+      throw err;
     }
   };
 
   const handleToggleProductPublished = async (productId: string, isPublished: boolean) => {
-    let updatedProduct: Product | undefined;
-    setProducts(prev =>
-      prev.map(p => {
-        if (p.id === productId) {
-          updatedProduct = { ...p, isPublished };
-          return updatedProduct;
-        }
-        return p;
-      })
-    );
+    const prod = products.find(p => p.id === productId);
+    if (!prod) return;
 
-    if (updatedProduct) {
-      try {
-        await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedProduct),
-        });
-      } catch (err) {
-        console.error('Error toggling product publish status', err);
+    try {
+      const updatedProduct = { ...prod, isPublished };
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProduct),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Error al actualizar visibilidad');
       }
+
+      setProducts(prev =>
+        prev.map(p => p.id === productId ? updatedProduct : p)
+      );
+    } catch (err: any) {
+      console.error('Error toggling product publish status', err);
+      alert('Error: ' + err.message);
     }
   };
 
@@ -225,20 +244,22 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(clientData),
       });
-      if (res.ok) {
-        await fetchState();
-      }
-    } catch (err) {
+      if (!res.ok) throw new Error('Error al añadir cliente');
+      await fetchState();
+    } catch (err: any) {
       console.error('Error adding client', err);
+      alert(err.message);
     }
   };
 
   const handleDeleteClient = async (clientId: string) => {
-    setClients(prev => prev.filter(c => c.id !== clientId));
     try {
-      await fetch(`/api/clients/${clientId}`, { method: 'DELETE' });
-    } catch (err) {
+      const res = await fetch(`/api/clients/${clientId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Error al eliminar cliente');
+      setClients(prev => prev.filter(c => c.id !== clientId));
+    } catch (err: any) {
       console.error('Error deleting client', err);
+      alert(err.message);
     }
   };
 
@@ -249,20 +270,22 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ing),
       });
-      if (res.ok) {
-        await fetchState();
-      }
-    } catch (err) {
+      if (!res.ok) throw new Error('Error al guardar ingrediente');
+      await fetchState();
+    } catch (err: any) {
       console.error('Error saving ingredient', err);
+      alert(err.message);
     }
   };
 
   const handleDeleteIngredient = async (id: string) => {
-    setIngredients(prev => prev.filter(i => i.id !== id));
     try {
-      await fetch(`/api/ingredients/${id}`, { method: 'DELETE' });
-    } catch (err) {
+      const res = await fetch(`/api/ingredients/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Error al eliminar ingrediente');
+      setIngredients(prev => prev.filter(i => i.id !== id));
+    } catch (err: any) {
       console.error('Error deleting ingredient', err);
+      alert(err.message);
     }
   };
 

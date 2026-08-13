@@ -14,7 +14,8 @@ const ALLOWED_SETTINGS_KEYS = [
   'pago_movil_rif', 'pago_movil_phone', 'pago_movil_owner',
   'online_payments_enabled', 'auto_verify_online_payments',
   'payment_methods', 'delivery_zones', 'admin_username', 'admin_password',
-  'last_bcv_sync_date', 'auto_sync_bcv_rate', 'hero_image_url', 'feature_cards'
+  'last_bcv_sync_date', 'auto_sync_bcv_rate', 'hero_image_url', 'feature_cards',
+  'ai_assistant_enabled'
 ];
 
 export const handler: Handler = async (event) => {
@@ -68,6 +69,7 @@ export const handler: Handler = async (event) => {
   if ('onlinePaymentsEnabled' in body) update['online_payments_enabled'] = Boolean(body.onlinePaymentsEnabled);
   if ('autoVerifyOnlinePayments' in body) update['auto_verify_online_payments'] = Boolean(body.autoVerifyOnlinePayments);
   if ('autoSyncBCVRate' in body) update['auto_sync_bcv_rate'] = Boolean(body.autoSyncBCVRate);
+  if ('aiAssistantEnabled' in body) update['ai_assistant_enabled'] = Boolean(body.aiAssistantEnabled);
 
   // JSONB arrays — validate they are arrays before saving
   if ('paymentMethods' in body && Array.isArray(body.paymentMethods)) {

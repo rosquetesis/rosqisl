@@ -114,6 +114,7 @@ function mapSettings(s: any) {
     heroStarTitle: s.hero_star_title || 'Docena Tradicional Glaseada',
     heroStarPriceUSD: s.hero_star_price_usd ?? 4.50,
     featureCards: s.feature_cards || [],
+    aiAssistantEnabled: s.ai_assistant_enabled ?? true,
   };
 }
 
@@ -128,6 +129,7 @@ function mapProduct(p: any) {
     stockElaborado: p.stock_elaborado,
     category: p.category,
     featured: p.featured,
+    isPublished: p.is_published ?? true,
   };
 }
 

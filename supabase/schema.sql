@@ -214,6 +214,8 @@ ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS zelle_owner VARCHAR(255);
 ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS hero_badge_text VARCHAR(255);
 ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS hero_star_title VARCHAR(255);
 ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS hero_star_price_usd NUMERIC(10,2) DEFAULT 4.50;
+ALTER TABLE store_settings ADD COLUMN IF NOT EXISTS ai_assistant_enabled BOOLEAN DEFAULT TRUE;
+
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT TRUE;
 
 SELECT 'Migración completada' AS status;
-

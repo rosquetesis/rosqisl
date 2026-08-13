@@ -32,6 +32,7 @@ export const handler: Handler = async (event) => {
     stock_elaborado: sanitizeInt(body.stockElaborado),
     category,
     featured: Boolean(body.featured),
+    is_published: body.isPublished !== undefined ? Boolean(body.isPublished) : true,
     updated_at: new Date().toISOString(),
   };
 
@@ -46,6 +47,6 @@ export const handler: Handler = async (event) => {
     return jsonResponse(200, { success: true, product: data });
   } catch (err: any) {
     console.error('[products] Error:', err.message);
-    return jsonResponse(500, { error: 'Error guardando el producto' });
+    return jsonResponse(500, { error: err.message || 'Error guardando el producto' });
   }
 };
