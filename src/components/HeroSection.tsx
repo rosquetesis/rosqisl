@@ -32,11 +32,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </div>
 
           <h2 className="font-serif text-3xl sm:text-5xl font-extrabold tracking-tight text-[#FDFBF7] leading-tight">
-            Los Verdaderos <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-200 to-amber-400">Rosquetes Canarios</span> y Rosqueticos de Aragua
+            Ricos <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-200 to-amber-400">Rosquetes Isleños</span> y Rosqueticos de Aragua
           </h2>
 
           <p className="text-[#EFECE6]/90 text-base sm:text-lg max-w-2xl font-sans leading-relaxed">
-            Crujientes por fuera, suaves por dentro y glaseados a la perfección. Elaboración artesanal diaria en Maracay con anís dulce, ralladura de limón criollo y el aroma inconfundible de nuestra tradición.
+            Rosqueticos isleños, hechos a mano en Turmero.<br />
+            Anís dulce, ralladura cítrica y un glaseado que brilla sin empalagar. Receta de origen canario, horneada con calma en el corazón de Aragua. Cada rosquetico guarda ese punto exacto entre lo crujiente del borde y la miga tierna que se deshace al morderlo.
           </p>
 
           {/* Value Highlights */}
