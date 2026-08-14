@@ -37,7 +37,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           <p className="text-[#EFECE6]/90 text-base sm:text-lg max-w-2xl font-sans leading-relaxed">
             Rosqueticos isleños, hechos a mano en Turmero.<br />
-            Anís dulce, ralladura cítrica y un glaseado que brilla sin empalagar. Receta de origen canario, cocinados con calma en el corazón de Aragua. Cada rosquetico guarda ese punto exacto entre lo crujiente del borde y la miga tierna que se deshace al morderlo.
+            Anís dulce, ralladura cítrica y un glaseado que brilla sin empalagar. Receta de origen canario, preparados con calma en el corazón de Aragua. Cada rosquetico guarda ese punto exacto entre lo crujiente del borde y la miga tierna que se deshace al morderlo.
           </p>
 
           {/* Value Highlights */}
