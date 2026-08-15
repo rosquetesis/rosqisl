@@ -91,6 +91,11 @@ async function createOrder(rawBody: string | null) {
       return null;
     });
 
+    // Send email notification (fire-and-forget, don't fail order if email fails)
+    sendOrderEmail(newOrder).catch(err => {
+      console.warn('[orders] Email notification failed:', err?.message || err);
+    });
+
     // Map snake_case to camelCase so the frontend doesn't crash (White Screen of Death)
     const mappedOrder = {
       id: data.id,
@@ -133,6 +138,113 @@ async function createOrder(rawBody: string | null) {
     console.error('[orders] Create error:', err.message);
     return jsonResponse(500, { error: 'Error al registrar la orden' });
   }
+}
+
+// ─── Send Order Email via Mailgun ─────────────────────────────────────────────
+async function sendOrderEmail(order: any) {
+  const apiKey  = process.env.MAILGUN_API_KEY;
+  const domain  = process.env.MAILGUN_DOMAIN;
+  const toEmail = process.env.MAILGUN_RECIPIENT;
+
+  if (!apiKey || !domain || !toEmail) {
+    console.warn('[orders] Mailgun env vars not set, skipping email.');
+    return;
+  }
+
+  const itemsList = (order.items as any[])
+    .map(i => `• ${i.productName} x${i.quantity} — $${Number(i.subtotalUSD).toFixed(2)} USD`)
+    .join('\n');
+
+  const paymentLabel: Record<string, string> = {
+    pago_movil: 'Pago Móvil',
+    zelle: 'Zelle',
+    efectivo: 'Efectivo',
+    binance: 'Binance / USDT',
+  };
+
+  const textBody = `
+🧁 NUEVO PEDIDO — Rosquetes Isleños
+=====================================
+N° Pedido  : ${order.order_number}
+Cliente    : ${order.customer_name}
+Teléfono   : ${order.customer_phone}
+Ciudad     : ${order.delivery_city}
+Zona       : ${order.delivery_zone}
+Dirección  : ${order.address_detail}
+
+Productos:
+${itemsList}
+
+Envío      : $${Number(order.delivery_fee_usd).toFixed(2)} USD
+TOTAL      : $${Number(order.total_usd).toFixed(2)} USD  |  ${Number(order.total_ves).toFixed(2)} Bs.
+
+Método de Pago : ${paymentLabel[order.payment_method] || order.payment_method}
+Referencia     : ${order.payment_reference || 'Sin referencia'}
+${order.notes ? `\nNotas: ${order.notes}` : ''}
+=====================================`.trim();
+
+  const htmlBody = `
+<div style="font-family:sans-serif;max-width:600px;margin:auto;border:1px solid #E5DED4;border-radius:12px;overflow:hidden;">
+  <div style="background:#3E2E22;color:#FEF3C7;padding:20px 24px;">
+    <h2 style="margin:0;font-size:20px;">🧁 Nuevo Pedido — Rosquetes Isleños</h2>
+    <p style="margin:6px 0 0;font-size:13px;opacity:.8;">N° ${order.order_number}</p>
+  </div>
+  <div style="padding:20px 24px;background:#FDFBF7;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <tr><td style="padding:4px 0;color:#78604E;width:120px;">Cliente</td><td style="font-weight:bold;color:#3E2E22;">${order.customer_name}</td></tr>
+      <tr><td style="padding:4px 0;color:#78604E;">Teléfono</td><td style="color:#3E2E22;">${order.customer_phone}</td></tr>
+      <tr><td style="padding:4px 0;color:#78604E;">Ciudad</td><td style="color:#3E2E22;">${order.delivery_city}</td></tr>
+      <tr><td style="padding:4px 0;color:#78604E;">Zona</td><td style="color:#3E2E22;">${order.delivery_zone}</td></tr>
+      <tr><td style="padding:4px 0;color:#78604E;">Dirección</td><td style="color:#3E2E22;">${order.address_detail}</td></tr>
+    </table>
+    <hr style="border:none;border-top:1px solid #E5DED4;margin:16px 0;" />
+    <h3 style="margin:0 0 10px;font-size:14px;color:#3E2E22;">Productos</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      ${(order.items as any[]).map(i => `
+      <tr>
+        <td style="padding:5px 0;color:#3E2E22;">${i.productName}</td>
+        <td style="text-align:center;color:#78604E;">x${i.quantity}</td>
+        <td style="text-align:right;font-weight:bold;color:#3E2E22;">$${Number(i.subtotalUSD).toFixed(2)}</td>
+      </tr>`).join('')}
+      <tr style="border-top:1px solid #E5DED4;">
+        <td colspan="2" style="padding-top:8px;color:#78604E;font-size:12px;">Costo de Envío</td>
+        <td style="text-align:right;padding-top:8px;color:#3E2E22;">$${Number(order.delivery_fee_usd).toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td colspan="2" style="padding-top:4px;font-weight:bold;color:#3E2E22;">TOTAL</td>
+        <td style="text-align:right;font-size:16px;font-weight:bold;color:#D97706;">$${Number(order.total_usd).toFixed(2)} USD</td>
+      </tr>
+    </table>
+    <hr style="border:none;border-top:1px solid #E5DED4;margin:16px 0;" />
+    <p style="font-size:13px;color:#3E2E22;margin:0;">
+      <strong>Pago:</strong> ${paymentLabel[order.payment_method] || order.payment_method}<br/>
+      <strong>Referencia:</strong> ${order.payment_reference || 'Sin referencia'}
+    </p>
+    ${order.notes ? `<p style="margin:10px 0 0;font-size:13px;color:#78604E;"><strong>Notas:</strong> ${order.notes}</p>` : ''}
+  </div>
+</div>`;
+
+  const formData = new URLSearchParams();
+  formData.append('from', `Rosquetes Isleños <mailgun@${domain}>`);
+  formData.append('to', toEmail);
+  formData.append('subject', `🧁 Pedido ${order.order_number} — ${order.customer_name}`);
+  formData.append('text', textBody);
+  formData.append('html', htmlBody);
+
+  const res = await fetch(`https://api.mailgun.net/v3/${domain}/messages`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${Buffer.from(`api:${apiKey}`).toString('base64')}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: formData.toString(),
+  });
+
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`Mailgun ${res.status}: ${txt}`);
+  }
+  console.log('[orders] Email sent OK for', order.order_number);
 }
 
 // ─── Update Order ─────────────────────────────────────────────────────────────
