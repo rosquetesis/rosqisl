@@ -44,11 +44,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs sm:text-sm text-[#EFECE6]/90 font-medium">
             <div className="flex items-center gap-2 bg-[#4A3728]/70 p-2.5 rounded-xl border border-[#5D4636]">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Horneado Diario Fresco</span>
+              <span>Siempre Frescos</span>
             </div>
             <div className="flex items-center gap-2 bg-[#4A3728]/70 p-2.5 rounded-xl border border-[#5D4636]">
               <Truck className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>Delivery en Aragua</span>
+              <span>Despachos en Aragua</span>
             </div>
             <div className="flex items-center gap-2 bg-[#4A3728]/70 p-2.5 rounded-xl border border-[#5D4636] col-span-2 sm:col-span-1">
               <HeartHandshake className="w-4 h-4 text-amber-300 shrink-0" />
