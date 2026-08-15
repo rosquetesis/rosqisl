@@ -40,6 +40,62 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
     window.open(waUrl, '_blank');
   };
 
+  const handlePrint = () => {
+    const win = window.open('', '_blank', 'width=600,height=700');
+    if (!win) return;
+    const itemsRows = order.items.map(i =>
+      `<tr><td>${i.quantity}x ${i.productName} (${i.unitType})</td><td style="text-align:right;font-family:monospace;font-weight:bold;">$${i.subtotalUSD.toFixed(2)} USD</td></tr>`
+    ).join('');
+    win.document.write(`<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"/><title>Comprobante ${order.orderNumber}</title>
+<style>
+  body{font-family:Arial,sans-serif;font-size:13px;color:#3E2E22;padding:28px;background:#fff;max-width:480px;margin:auto}
+  h2{font-size:19px;font-weight:900;text-transform:uppercase;text-align:center;margin:0}
+  .center{text-align:center} .muted{color:#78604E} .mono{font-family:monospace}
+  .section{background:#FDFBF7;border:1px solid #E5DED4;border-radius:8px;padding:10px 14px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;margin:8px 0}
+  td{padding:5px 2px;border-bottom:1px solid #E5DED4}
+  .total{font-size:16px;color:#D97706;font-weight:900}
+  .badge{color:#D97706;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px}
+  hr{border:none;border-top:1px solid #E5DED4;margin:12px 0}
+</style></head>
+<body>
+  <div class="center">
+    <div style="font-size:36px">🍩</div>
+    <h2>${settings.storeName}</h2>
+    <p class="badge">${settings.storeBadge || ''}</p>
+    <p class="muted" style="font-style:italic;font-size:11px">${settings.storeTagline || ''}</p>
+    <p style="font-family:monospace;font-weight:bold;margin-top:8px">Comprobante N°: ${order.orderNumber}</p>
+    <p class="muted" style="font-size:10px">Fecha: ${new Date(order.createdAt).toLocaleString('es-VE')}</p>
+  </div>
+  <hr/>
+  <div class="section">
+    <p><strong>Cliente:</strong> ${order.customerName}</p>
+    <p><strong>Teléfono:</strong> ${order.customerPhone}</p>
+    <p><strong>Zona:</strong> ${order.deliveryZone} (${order.deliveryCity})</p>
+    <p><strong>Dirección:</strong> ${order.addressDetail}</p>
+  </div>
+  <div class="section">
+    <table>${itemsRows}</table>
+    <hr/>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <strong>TOTAL A PAGAR:</strong>
+      <div style="text-align:right">
+        <p class="total">$${order.totalUSD.toFixed(2)} USD</p>
+        <p class="muted mono" style="font-size:10px">(${order.totalVES.toFixed(2)} Bs.)</p>
+      </div>
+    </div>
+  </div>
+  <div class="section" style="background:#FFFBEA;border-color:#FDE68A;font-size:11px">
+    <p><strong>Pago:</strong> ${order.paymentMethod.toUpperCase().replace('_',' ')}</p>
+    ${order.paymentReference ? `<p><strong>Ref:</strong> #${order.paymentReference}</p>` : ''}
+  </div>
+  <p class="center muted" style="font-style:italic;font-size:10px;margin-top:14px">¡Gracias por preferir Rosquetes Isleños!</p>
+  <script>window.onload=()=>{window.print();window.onafterprint=()=>window.close();}<\/script>
+</body></html>`);
+    win.document.close();
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="bg-[#FDFBF7] rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-[#E5DED4] animate-in zoom-in-95 duration-200">
@@ -120,7 +176,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
             </button>
 
             <button
-              onClick={() => window.print()}
+              onClick={handlePrint}
               className="w-full flex items-center justify-center gap-2 bg-[#F4EFEA] hover:bg-[#EFECE6] text-[#3E2E22] border border-[#E5DED4] font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
             >
               <Printer className="w-4 h-4 text-[#D97706]" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Printer, X, CheckCircle2, MapPin, Phone } from 'lucide-react';
+import { Printer, X } from 'lucide-react';
 import { AdminSettings, Order } from '../types';
 
 interface ReceiptModalProps {
@@ -14,6 +14,106 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
   settings,
 }) => {
   if (!order) return null;
+
+  const handlePrint = () => {
+    const el = document.getElementById('printable-receipt');
+    if (!el) return;
+
+    const win = window.open('', '_blank', 'width=600,height=800');
+    if (!win) return;
+
+    win.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Comprobante ${order.orderNumber}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #3E2E22; padding: 24px; background: #fff; }
+    h2 { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+    .center { text-align: center; }
+    .muted { color: #78604E; }
+    .italic { font-style: italic; }
+    .mono { font-family: monospace; }
+    .bold { font-weight: bold; }
+    .section { background: #FDFBF7; border: 1px solid #E5DED4; border-radius: 8px; padding: 10px 12px; margin: 10px 0; }
+    .header { border-bottom: 1px solid #E5DED4; padding-bottom: 12px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { border: 1px solid #E5DED4; padding: 6px 8px; }
+    th { background: #F4EFEA; font-weight: bold; text-transform: uppercase; font-size: 10px; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .totals { background: #FDFBF7; border: 1px solid #E5DED4; border-radius: 8px; padding: 10px 12px; text-align: right; }
+    .total-final { font-size: 15px; color: #D97706; font-weight: 900; }
+    .payment { background: #FFFBEA; border: 1px solid #FDE68A; border-radius: 8px; padding: 10px 12px; margin: 10px 0; font-size: 11px; }
+    .footer { text-align: center; font-style: italic; color: #78604E; font-size: 10px; margin-top: 14px; }
+    .order-num { font-family: monospace; font-weight: bold; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="header center">
+    <div style="font-size:32px; margin-bottom:4px;">${settings.storeLogoType !== 'image' ? (settings.storeLogoValue || '🍩') : '🍩'}</div>
+    <h2>${settings.storeName}</h2>
+    ${settings.storeBadge ? `<p style="color:#D97706;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">${settings.storeBadge}</p>` : ''}
+    <p class="muted italic" style="font-size:11px;">${settings.storeTagline || ''}</p>
+    <p class="muted" style="font-size:10px;">${settings.storeAddress || ''}</p>
+    <p class="order-num" style="margin-top:8px;">NOTA DE ENTREGA N°: ${order.orderNumber}</p>
+    <p class="muted" style="font-size:10px;">Fecha: ${new Date(order.createdAt).toLocaleString('es-VE')}</p>
+  </div>
+
+  <div class="section">
+    <p><strong>Cliente:</strong> ${order.customerName}</p>
+    <p><strong>Teléfono / WhatsApp:</strong> ${order.customerPhone}</p>
+    <p><strong>Zona de Entrega (Aragua):</strong> ${order.deliveryZone} (${order.deliveryCity})</p>
+    <p><strong>Dirección:</strong> ${order.addressDetail}</p>
+    ${order.notes ? `<p><strong>Notas:</strong> ${order.notes}</p>` : ''}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th class="text-center">Cant.</th>
+        <th class="text-right">Precio P/U</th>
+        <th class="text-right">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${order.items.map(item => `
+      <tr>
+        <td>${item.productName} (${item.unitType})</td>
+        <td class="text-center mono bold">${item.quantity}</td>
+        <td class="text-right mono">$${item.unitPriceUSD.toFixed(2)}</td>
+        <td class="text-right mono bold">$${item.subtotalUSD.toFixed(2)}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <p>Subtotal Productos: $${(order.totalUSD - order.deliveryFeeUSD).toFixed(2)} USD</p>
+    <p>Costo Delivery (${order.deliveryZone}): $${order.deliveryFeeUSD.toFixed(2)} USD</p>
+    <div style="border-top:1px solid #E5DED4;margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;align-items:flex-start;">
+      <span class="bold" style="font-size:13px;">TOTAL A PAGAR:</span>
+      <div>
+        <p class="total-final">$${order.totalUSD.toFixed(2)} USD</p>
+        <p class="muted mono" style="font-size:10px;">(${order.totalVES.toFixed(2)} Bs. @ Tasa ${order.exchangeRateVES.toFixed(2)})</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="payment">
+    <p><strong>Método de Pago:</strong> ${order.paymentMethod.toUpperCase().replace('_', ' ')}</p>
+    ${order.paymentReference ? `<p><strong>Ref. Pago:</strong> #${order.paymentReference}</p>` : ''}
+    <p><strong>Estado del Pago:</strong> ${order.paymentVerified ? '✓ Verificado' : 'Pendiente de verificación'}</p>
+  </div>
+
+  <div class="footer">¡Gracias por preferir la tradición artesanal de Rosquetes Isleños!</div>
+
+  <script>window.onload = () => { window.print(); window.onafterprint = () => window.close(); };<\/script>
+</body>
+</html>`);
+    win.document.close();
+  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
@@ -104,7 +204,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
           </div>
 
           <div className="text-center text-[10px] text-[#78604E] italic pt-2">
-            ¡Gracias por preferir la tradición artesanal de Rosquetes Canarios Don Rosquetico!
+            ¡Gracias por preferir la tradición artesanal de Rosquetes Isleños!
           </div>
         </div>
 
@@ -117,7 +217,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
             Cerrar
           </button>
           <button
-            onClick={() => window.print()}
+            onClick={handlePrint}
             className="px-5 py-2 bg-[#3E2E22] text-[#FDFBF7] font-bold rounded-xl text-xs flex items-center gap-1.5 hover:bg-[#5D4636] cursor-pointer"
           >
             <Printer className="w-4 h-4 text-[#D97706]" /> Imprimir Comprobante
@@ -127,3 +227,4 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
     </div>
   );
 };
+
