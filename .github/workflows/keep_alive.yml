@@ -1,15 +1,44 @@
+name: Keep Supabase Alive
+
 on:
   schedule:
-    # Se ejecuta a las 3:00 AM de Venezuela (7:00 AM UTC) los domingos (0) y viernes (5)
-    - cron: '0 7 * * 0,5'
+    # Se ejecuta TODOS LOS DÍAS a las 07:25 UTC (3:25 AM de Venezuela)
+    - cron: '25 7 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  ping:
+  ping-supabase:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase Database
+      - name: Update keep_alive timestamp in Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
-          curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/products?select=id&limit=1" \
-          -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
-          -H "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}"
+          CLEAN_URL="${SUPABASE_URL%/}"
+          curl -f -X PATCH \
+            "$CLEAN_URL/rest/v1/keep_alive?id=eq.1" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=minimal" \
+            -d "{\"last_ping\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Keep GitHub Action alive (Monthly commit)
+        run: |
+          DAY=$(date -u +"%d")
+          if [ "$DAY" = "01" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit --allow-empty -m "chore: keep github actions active"
+            git push
+            echo "Commit realizado para mantener activo el repositorio."
+          else
+            echo "Día $DAY del mes: solo se actualizó Supabase."
+          fi
